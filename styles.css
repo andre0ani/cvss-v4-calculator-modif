@@ -127,3 +127,22 @@ Useful tools:
   border-color:#060;                         
   color:#fff
 }
+
+.btn-high {
+    background: #d9534f;
+    border-color: #d9534f;
+    color: #fff;
+}
+
+.btn-low {
+    background: #f0ad4e;
+    border-color: #f0ad4e;
+    color: #fff;
+}
+
+.btn-none {
+    background: #5cb85c;
+    border-color: #5cb85c;
+    color: #fff;
+}
+

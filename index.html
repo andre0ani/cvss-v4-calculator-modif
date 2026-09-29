@@ -43,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <header id="header">
             <img alt="CVSS logo" src="https://first.org/cvss/identity/cvssv4_web.png" width="125">
             <h3 class="page-title">Calculateur Common Vulnerability Scoring System Version (CVSS) 4.0 </h3>
+            <h4>Fork par Patrice Andreani</h4>
             <mark
                 class="tooltip c-hand"
                 aria-label="Click to copy vector to clipboard"
@@ -52,7 +53,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 @click="copyVector">
                 {{ vector }}
             </mark>
-            <button class="btn btn-sm ml-2" @click="onReset()">Réinitialiser</button>
+            <button
+                :class="[
+                    buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
+                    optionClass(optionData.value)
+                ]"
+                v-if="option"
+                @click="onButton(metricData.short, optionData.value)"
+            >
+                <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                <span v-else>{{ option }}</span>
+            </button>
             <h5 class="score-line">
                 <span
                     class="tooltip tooltip-bottom c-hand"
@@ -103,8 +114,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
                                     <div class="col-9 columns">
                                         <div class="col-2 pl-2" v-for="(optionData, option) in metricData.options">
-                                            <button :class="buttonClass(vectorInstance.metrics[metricData.short] == optionData.value)" v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)">
+                                            <button
+                                                :class="[
+                                                    buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
+                                                    optionClass(optionData.value)
+                                                ]"
+                                                v-if="option"
+                                                @click="onButton(metricData.short, optionData.value)"
+                                            >
                                                 <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
                                                 <span v-else>{{ option }}</span>
                                             </button>
@@ -118,11 +135,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
                                     <div class="columns">
                                         <div class="col-2 pl-2" v-for="(optionData, option) in metricData.options">
-                                            <button :class="buttonClass(vectorInstance.metrics[metricData.short] == optionData.value)" v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)">
-                                                <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                <span v-else>{{ option }}</span>
-                                            </button>
+                                            <button
+                                                    :class="[
+                                                        buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
+                                                        optionClass(optionData.value)
+                                                    ]"
+                                                    v-if="option"
+                                                    @click="onButton(metricData.short, optionData.value)"
+                                                >
+                                                    <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                                    <span v-else>{{ option }}</span>
+                                                </button>
                                         </div>
                                     </div>
                                 </div>
@@ -133,8 +156,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
                                     <div class="columns pl-2">
                                         <div class="col-4 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
-                                            <button :class="buttonClass(vectorInstance.metrics[metricData.short] == optionData.value)" v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)">
+                                            <button
+                                                :class="[
+                                                    buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
+                                                    optionClass(optionData.value)
+                                                ]"
+                                                v-if="option"
+                                                @click="onButton(metricData.short, optionData.value)"
+                                            >
                                                 <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
                                                 <span v-else>{{ option }}</span>
                                             </button>
@@ -148,11 +177,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
                                     <div class="columns pl-2">
                                         <div class="col-6 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
-                                            <button :class="buttonClass(vectorInstance.metrics[metricData.short] == optionData.value)" v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)">
-                                                <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                <span v-else>{{ option }}</span>
-                                            </button>
+                                            <button
+                                                    :class="[
+                                                        buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
+                                                        optionClass(optionData.value)
+                                                    ]"
+                                                    v-if="option"
+                                                    @click="onButton(metricData.short, optionData.value)"
+                                                >
+                                                    <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                                    <span v-else>{{ option }}</span>
+                                                </button>
                                         </div>
                                     </div>
                                 </div>
@@ -163,11 +198,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
                                     <div class="columns pl-2">
                                         <div class="col-12 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
-                                            <button :class="buttonClass(vectorInstance.metrics[metricData.short] == optionData.value, true)" v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)">
-                                                <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                <span v-else>{{ option }}</span>
-                                            </button>
+                                            <button
+                                                    :class="[
+                                                        buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
+                                                        optionClass(optionData.value)
+                                                    ]"
+                                                    v-if="option"
+                                                    @click="onButton(metricData.short, optionData.value)"
+                                                >
+                                                    <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                                    <span v-else>{{ option }}</span>
+                                                </button>
                                         </div>
                                     </div>
                                 </div>

@@ -36,6 +36,17 @@ const app = Vue.createApp({
         buttonClass(isPrimary, big = false) {
             return `btn btn-m ${isPrimary ? "btn-primary" : ""} ${!big ? "btn-sm" : ""}`;
         },
+
+        optionClass(value) {
+            const optionClasses = {
+                "H": "btn-high",
+                "L": "btn-low",
+                "N": "btn-none"
+            };
+
+            return optionClasses[value] || "";
+        },
+
         /**
          * Returns the CSS class based on the severity rating.
          * Maps severity levels to appropriate CSS classes.
