@@ -290,20 +290,20 @@ class Vector {
 
         // Define the macrovectors and their positions
         const macroVectorDetails = [
-            "Exploitability",
-            "Complexity",
-            "Vulnerable system",
-            "Subsequent system",
+            "Exploitabilité",
+            "Complexité",
+            "Système Vulnérable",
+            "Système Subséquent",
             "Exploitation",
-            "Security requirements"
+            "Prérequis de Sécurité"
         ];
 
         // Define which macrovectors have only two severity options
-        const macroVectorsWithTwoSeverities = ["Complexity", "Security requirements"];
+        const macroVectorsWithTwoSeverities = ["Complexité", "Prérequis de Sécurité"];
 
         // Lookup tables for macrovectors with two and three possible severity levels
-        const threeSeverities = ["High", "Medium", "Low"];
-        const twoSeverities = ["High", "Low"];
+        const threeSeverities = ["Haut", "Moyen", "Bas"];
+        const twoSeverities = ["Haut", "Bas"];
 
         // Construct the detailed breakdown
         return Object.fromEntries(
@@ -375,7 +375,6 @@ class Vector {
         }
 
         const expectedMetrics = Object.entries(Vector.ALL_METRICS);
-        const baseMetricsCount = Object.keys(Vector.METRICS.BASE).length;
         let mandatoryMetricIndex = 0;
 
         for (let metric of metrics) {
@@ -390,7 +389,7 @@ class Vector {
             // Find the current expected metric
             while (expectedMetrics[mandatoryMetricIndex] && expectedMetrics[mandatoryMetricIndex][0] !== key) {
                 // Check for missing mandatory metrics
-                if (mandatoryMetricIndex < baseMetricsCount) {
+                if (mandatoryMetricIndex < 11) {
                     console.error("Error: invalid vector, missing mandatory metrics");
                     return false;
                 }
@@ -404,13 +403,6 @@ class Vector {
             }
 
             mandatoryMetricIndex++;
-        }
-
-        // A vector that ends before naming all mandatory metrics never reaches the
-        // missing-metric check inside the loop, so enforce the count once the input is spent.
-        if (mandatoryMetricIndex < baseMetricsCount) {
-            console.error("Error: invalid vector, missing mandatory metrics");
-            return false;
         }
 
         return true;
@@ -903,15 +895,15 @@ class CVSS40 {
      */
     calculateSeverityRating(score) {
         if (score === 0.0) {
-            return "None";
+            return "Aucun";
         } else if (score >= 0.1 && score <= 3.9) {
-            return "Low";
+            return "Bas";
         } else if (score >= 4.0 && score <= 6.9) {
-            return "Medium";
+            return "Moyen";
         } else if (score >= 7.0 && score <= 8.9) {
-            return "High";
+            return "Haut";
         } else if (score >= 9.0 && score <= 10.0) {
-            return "Critical";
+            return "Critique";
         }
         return "Unknown"; // In case of an unexpected score value
     }

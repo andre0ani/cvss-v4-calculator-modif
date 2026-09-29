@@ -44,11 +44,11 @@ const app = Vue.createApp({
          */
         getSeverityClass(severityRating) {
             const severityClasses = {
-                "Low": "c-hand text-success",
-                "Medium": "c-hand text-warning",
-                "High": "c-hand text-error",
-                "Critical": "c-hand text-error text-bold",
-                "None": "c-hand text-gray"
+                "Bas": "c-hand text-success",
+                "Moyen": "c-hand text-warning",
+                "Haut": "c-hand text-error",
+                "Critique": "c-hand text-error text-bold",
+                "Aucun": "c-hand text-gray"
             };
             return severityClasses[severityRating] || "c-hand text-gray"; // Default to gray if undefined
         },
@@ -140,7 +140,7 @@ const app = Vue.createApp({
          * @returns {string} - The severity rating (e.g., "Low", "High").
          */
         severityRating() {
-            return this.cvssInstance ? this.cvssInstance.severity : "None";
+            return this.cvssInstance ? this.cvssInstance.severity : "Aucun";
         }
     },
     async beforeMount() {
