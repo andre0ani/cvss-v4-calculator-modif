@@ -120,6 +120,13 @@ const app = Vue.createApp({
             window.location.hash = this.vector;
         },
 
+        joinFrench(items) {
+            if (!items || items.length === 0) return "";
+            if (items.length === 1) return items[0];
+            if (items.length === 2) return `${items[0]} et ${items[1]}`;
+            return `${items.slice(0, -1).join(", ")} et ${items[items.length - 1]}`;
+        },
+
         onButton(metric, value) {
             this.vectorInstance.updateMetric(metric, value);
             window.location.hash = this.vector;
@@ -230,16 +237,26 @@ const app = Vue.createApp({
             return this.vectorInstance.raw;
         },
 
+        cvssCalculation() {
+            if (!this.vectorInstance) return null;
+            try {
+                return new CVSS40(this.vectorInstance);
+            } catch (error) {
+                console.error("Unable to calculate CVSS score:", error);
+                return null;
+            }
+        },
+
         score() {
-            return this.cvssInstance ? this.cvssInstance.score : 0;
+            return this.cvssCalculation ? this.cvssCalculation.score : 0;
         },
 
         severityRating() {
-            return this.cvssInstance ? this.cvssInstance.severity : "Aucun";
+            return this.cvssCalculation ? this.cvssCalculation.severity : "Aucun";
         },
 
         generatedSummary() {
-            if (!this.cvssInstance || !this.cvssConfigData) {
+            if (!this.cvssCalculation || !this.cvssConfigData) {
                 return "Sélectionnez les métriques pour générer une synthèse.";
             }
 
