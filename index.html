@@ -68,7 +68,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <main class="page-content">
         <section class="score-panel" aria-labelledby="score-title">
             <div class="score-main">
-                <div class="score-label" id="score-title">Score CVSS v4.0</div>
+                <div class="score-label" id="score-title">{{ scoreNomenclature }}</div>
                 <div class="score-value" :class="getSeverityClass(severityRating)">{{ score }}</div>
                 <div class="severity-badge" :class="getSeverityClass(severityRating)">{{ severityRating }}</div>
             </div>

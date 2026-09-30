@@ -54,9 +54,9 @@ const app = Vue.createApp({
 
         fillDescription(fill) {
             if (fill === "consumer") {
-                return "À renseigner selon le contexte spécifique de l'environnement évalué.";
+                return "À renseigner selon l'environnement réel. Le client peut fournir les informations nécessaires sur l'architecture, les contrôles et la criticité de l'actif.";
             }
-            return "Métriques utilisées pour l'évaluation de la vulnérabilité.";
+            return "Métriques utilisées pour l'évaluation intrinsèque de la vulnérabilité.";
         },
 
         optionClass(value) {
@@ -254,6 +254,16 @@ const app = Vue.createApp({
         severityRating() {
             return this.cvssCalculation ? this.cvssCalculation.severity : "Aucun";
         },
+        scoreNomenclature() {
+            const metrics = this.vectorInstance?.metrics || {};
+            const hasThreat = metrics.E && metrics.E !== "X";
+            const environmentalKeys = ["CR", "IR", "AR", "MAV", "MAC", "MAT", "MPR", "MUI", "MVC", "MVI", "MVA", "MSC", "MSI", "MSA"];
+            const hasEnvironmental = environmentalKeys.some(key => metrics[key] && metrics[key] !== "X");
+            if (hasThreat && hasEnvironmental) return "CVSS-BTE";
+            if (hasThreat) return "CVSS-BT";
+            if (hasEnvironmental) return "CVSS-BE";
+            return "CVSS-B";
+        },
 
         generatedSummary() {
             if (!this.cvssCalculation || !this.cvssConfigData) {
@@ -327,7 +337,7 @@ const app = Vue.createApp({
                 "",
                 "## Évaluation CVSS v4.0",
                 "",
-                `**Score : ${this.score} — ${this.severityRating}**`,
+                `**${this.scoreNomenclature} : ${this.score} — ${this.severityRating}**`,
                 "",
                 `\`${this.vector}\``,
                 "",

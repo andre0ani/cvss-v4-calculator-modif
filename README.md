@@ -39,3 +39,15 @@ Les justifications et le rapport sont enregistrés uniquement dans le `localStor
 ## Licence
 
 Voir `LICENSE` pour les informations de licence du projet d'origine.
+
+### CVSS v4.0 metric groups
+
+The interface exposes the four CVSS v4.0 metric groups in canonical order:
+
+1. Base
+2. Threat
+3. Environmental
+4. Supplemental
+
+Threat and Environmental selections are optional and contextual. The displayed score is labelled `CVSS-B`, `CVSS-BT`, `CVSS-BE` or `CVSS-BTE` according to the metric groups explicitly selected. Supplemental metrics provide context and do not modify the numerical CVSS score.
+
