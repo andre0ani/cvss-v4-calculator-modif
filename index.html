@@ -14,23 +14,23 @@ modification, are permitted provided that the following conditions are met:
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
 -->
-<html>
+<html lang="fr">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Calculateur CVSS 4.0</title>
-    <!-- External Libraries -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculateur CVSS 4.0 en français avec justification des métriques et rapport de vulnérabilité.">
+    <title>Calculateur CVSS 4.0 — Français</title>
     <script src="https://unpkg.com/vue@3.2.45/dist/vue.global.prod.js"></script>
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="https://unpkg.com/spectre.css@0.5.9/dist/spectre.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css@0.5.9/dist/spectre-exp.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css@0.5.9/dist/spectre-icons.min.css">
@@ -38,192 +38,294 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <link rel="icon" href="data:,">
 </head>
 <body>
-    <div id="app" class="container">
-        <!-- Header Section -->
-        <header id="header">
-            <img alt="CVSS logo" src="https://first.org/cvss/identity/cvssv4_web.png" width="125">
-            <h3 class="page-title">Calculateur Common Vulnerability Scoring System Version (CVSS) 4.0 </h3>
-            <h4>Fork par Patrice Andreani</h4>
-            <mark
-                class="tooltip c-hand"
-                aria-label="Click to copy vector to clipboard"
-                data-tooltip="Click vector to copy to clipboard"
-                role="button"
-                tabindex="0"
-                @click="copyVector">
-                {{ vector }}
-            </mark>
-            <button
-                :class="[
-                    buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
-                    optionClass(optionData.value)
-                ]"
-                v-if="option"
-                @click="onButton(metricData.short, optionData.value)"
-            >
-                <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                <span v-else>{{ option }}</span>
-            </button>
-            <h5 class="score-line">
-                <span
-                    class="tooltip tooltip-bottom c-hand"
-                    :data-tooltip="showDetails ? 'Hide details' : 'Show details'"
-                    :aria-label="showDetails ? 'Hide details' : 'Show details'"
-                    role="button"
-                    tabindex="0"
-                    @click="showDetails = !showDetails">
-                    Score CVSS v4.0 :
-                    <span :class="getSeverityClass(severityRating)">{{ score }} / {{ severityRating }}</span>
-                    <span v-if="!showDetails"> ⊕</span>
-                    <span v-else> ⊖</span>
-                </span>
-            </h5>
-
-            <blockquote v-if="showDetails">
-                <sup class="mb-2"><i>Macro vecteur: {{ macroVector }}</i></sup>
-                <div v-for="(severity, description) in vectorInstance.severityBreakdown" :key="description">
-                    {{ description }}: {{ severity }}
+<div id="app" class="app-shell">
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand-block">
+                <div class="brand-mark" aria-hidden="true">CVSS</div>
+                <div>
+                    <h1>Calculateur CVSS 4.0</h1>
+                    <p>Calcul, justification et documentation de vulnérabilités</p>
                 </div>
-            </blockquote>
+            </div>
 
-        </header>
+            <div class="header-actions">
+                <button class="btn" type="button" @click="resetAll">Réinitialiser</button>
+                <button class="btn btn-primary" type="button" @click="setView('report')">Mode rapport</button>
+            </div>
+        </div>
 
-        <!-- Metrics Section -->
-        <main class="columns" :style="{'margin-top': header_height + 10 + 'px'}">
-            <h6 id="cvssReference" style="width: 100%; max-width: 1065px; margin: 10px;">
-                Passez la souris sur un nom ou une valeur d'une métrique pour plus d'informations.
-            </h6>
-            <div class="column col-10 col-xl-12">
-                <div class="metric-type" v-for="(metricTypeData, metricType) in cvssConfigData">
-                    <h4 class="text-center">
-                        {{ metricType }}
-                        <span class="tooltip tooltip-left c-hand text-small" :data-tooltip="'This category should be filled \n by the ' + metricTypeData.fill">
-                            <sup>?</sup>
-                        </span>
-                    </h4>
-                    <div class="metric-group" v-for="(metricGroupData, metricGroup) in metricTypeData.metric_groups">
-                        <h5 class="text-center">{{ metricGroup }}</h5>
-                        <div>
-                            <!-- Metric Selection -->
-                            <div class="" v-for="(metricData, metric) in metricGroupData">
+        <nav class="view-tabs" aria-label="Mode de l'application">
+            <button :class="['view-tab', { active: currentView === 'calculator' }]" type="button" @click="setView('calculator')" :aria-current="currentView === 'calculator' ? 'page' : null">
+                Calculateur
+            </button>
+            <button :class="['view-tab', { active: currentView === 'report' }]" type="button" @click="setView('report')" :aria-current="currentView === 'report' ? 'page' : null">
+                Rapport de vulnérabilité
+            </button>
+        </nav>
+    </header>
 
-                                <!-- Multiple ways of rendering metrics based on screen size -->
-                                <div class="columns hide-xl mb-2">
-                                    <div class="col-3 text-right pr-2" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
-                                    <div class="col-3 text-right pr-2" v-else>{{metric}}:</div>
+    <main class="page-content">
+        <section class="score-panel" aria-labelledby="score-title">
+            <div class="score-main">
+                <div class="score-label" id="score-title">Score CVSS v4.0</div>
+                <div class="score-value" :class="getSeverityClass(severityRating)">{{ score }}</div>
+                <div class="severity-badge" :class="getSeverityClass(severityRating)">{{ severityRating }}</div>
+            </div>
 
-                                    <div class="col-9 columns">
-                                        <div class="col-2 pl-2" v-for="(optionData, option) in metricData.options">
-                                            <button
-                                                :class="[
-                                                    buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
-                                                    optionClass(optionData.value)
-                                                ]"
-                                                v-if="option"
-                                                @click="onButton(metricData.short, optionData.value)"
-                                            >
-                                                <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                <span v-else>{{ option }}</span>
-                                            </button>
-                                        </div>
-                                    </div>
+            <div class="score-details">
+                <div class="vector-label">Vecteur CVSS</div>
+                <code class="vector-value" :title="vector">{{ vector }}</code>
+                <div class="score-actions">
+                    <button class="btn btn-sm" type="button" @click="copyVector">Copier le vecteur</button>
+                    <button class="btn btn-sm" type="button" @click="setView('report')">Créer / modifier le rapport</button>
+                </div>
+                <div class="macro-vector">Macro-vecteur : <code>{{ macroVector }}</code></div>
+            </div>
+        </section>
+
+        <div v-if="notice" class="notice" role="status" aria-live="polite">{{ notice }}</div>
+
+        <section v-if="currentView === 'calculator'" class="calculator-view">
+            <div class="intro-card">
+                <div>
+                    <h2>Évaluer la vulnérabilité</h2>
+                    <p>Sélectionnez directement les valeurs CVSS. Pour chaque choix, une explication est affichée et vous pouvez conserver votre justification technique.</p>
+                </div>
+                <div class="legend" aria-label="Légende des valeurs">
+                    <span class="legend-item"><span class="legend-dot high"></span> Élevé</span>
+                    <span class="legend-item"><span class="legend-dot low"></span> Bas</span>
+                    <span class="legend-item"><span class="legend-dot none"></span> Aucun</span>
+                </div>
+            </div>
+
+            <section v-for="(metricTypeData, metricType) in cvssConfigData" :key="metricType" class="metric-section">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">{{ metricTypeData.fill === 'consumer' ? 'Environnement' : 'CVSS' }}</p>
+                        <h2>{{ metricType }}</h2>
+                    </div>
+                    <p class="section-help">{{ fillDescription(metricTypeData.fill) }}</p>
+                </div>
+
+                <div v-for="(metricGroupData, metricGroup) in metricTypeData.metric_groups" :key="metricGroup" class="metric-group">
+                    <h3 v-if="metricGroup">{{ metricGroup }}</h3>
+                    <div class="metric-grid">
+                        <article v-for="(metricData, metric) in metricGroupData" :key="metricData.short" class="metric-card">
+                            <div class="metric-header">
+                                <div>
+                                    <div class="metric-code">{{ metricData.short }}</div>
+                                    <h4>{{ metric }}</h4>
                                 </div>
-
-                                <div class="show-xl hide-lg">
-                                    <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
-                                    <div class="mb-1" v-else>{{metric}}:</div>
-
-                                    <div class="columns">
-                                        <div class="col-2 pl-2" v-for="(optionData, option) in metricData.options">
-                                            <button
-                                                    :class="[
-                                                        buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
-                                                        optionClass(optionData.value)
-                                                    ]"
-                                                    v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)"
-                                                >
-                                                    <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                    <span v-else>{{ option }}</span>
-                                                </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="show-lg hide-md">
-                                    <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
-                                    <div class="mb-1" v-else>{{metric}}:</div>
-
-                                    <div class="columns pl-2">
-                                        <div class="col-4 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
-                                            <button
-                                                :class="[
-                                                    buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
-                                                    optionClass(optionData.value)
-                                                ]"
-                                                v-if="option"
-                                                @click="onButton(metricData.short, optionData.value)"
-                                            >
-                                                <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                <span v-else>{{ option }}</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="show-md hide-sm">
-                                    <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
-                                    <div class="mb-1" v-else>{{metric}}:</div>
-
-                                    <div class="columns pl-2">
-                                        <div class="col-6 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
-                                            <button
-                                                    :class="[
-                                                        buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
-                                                        optionClass(optionData.value)
-                                                    ]"
-                                                    v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)"
-                                                >
-                                                    <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                    <span v-else>{{ option }}</span>
-                                                </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="show-sm">
-                                    <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
-                                    <div class="mb-1" v-else>{{metric}}:</div>
-
-                                    <div class="columns pl-2">
-                                        <div class="col-12 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
-                                            <button
-                                                    :class="[
-                                                        buttonClass(vectorInstance.metrics[metricData.short] == optionData.value),
-                                                        optionClass(optionData.value)
-                                                    ]"
-                                                    v-if="option"
-                                                    @click="onButton(metricData.short, optionData.value)"
-                                                >
-                                                    <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
-                                                    <span v-else>{{ option }}</span>
-                                                </button>
-                                        </div>
-                                    </div>
-                                </div>
-
+                                <span class="metric-status" :class="selectedOption(metricData).value === 'X' ? 'undefined' : 'defined'">
+                                    {{ selectedOption(metricData).value === 'X' ? 'Non défini' : selectedOption(metricData).value }}
+                                </span>
                             </div>
 
-                        </div>
+                            <p class="metric-description">{{ metricData.tooltip }}</p>
+
+                            <div class="option-list" role="group" :aria-label="'Valeur pour ' + metric">
+                                <button
+                                    v-for="(optionData, option) in metricData.options"
+                                    :key="optionData.value"
+                                    :class="['metric-option', optionClass(optionData.value), { selected: vectorInstance.metrics[metricData.short] === optionData.value }]"
+                                    type="button"
+                                    :aria-pressed="vectorInstance.metrics[metricData.short] === optionData.value"
+                                    @click="onButton(metricData.short, optionData.value)"
+                                >
+                                    <span class="option-name">{{ option }}</span>
+                                    <span class="option-code">{{ optionData.value }}</span>
+                                </button>
+                            </div>
+
+                            <div class="selected-explanation" v-if="selectedOption(metricData)">
+                                <div class="explanation-label">Choix actuel</div>
+                                <strong>{{ selectedOption(metricData).label }}</strong>
+                                <p>{{ selectedOption(metricData).description }}</p>
+                            </div>
+
+                            <label class="justification-label" :for="'justification-' + metricData.short">
+                                Justification de votre choix
+                                <span>Facultatif</span>
+                            </label>
+                            <textarea
+                                :id="'justification-' + metricData.short"
+                                class="justification-input"
+                                rows="2"
+                                :placeholder="'Pourquoi cette valeur est-elle adaptée à cette vulnérabilité ?'"
+                                v-model="justifications[metricData.short]"
+                                @input="saveJustifications"
+                            ></textarea>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="summary-card">
+                <div class="section-heading compact">
+                    <div>
+                        <p class="eyebrow">Synthèse</p>
+                        <h2>Comprendre le score</h2>
+                    </div>
+                </div>
+                <p class="generated-summary">{{ generatedSummary }}</p>
+                <div class="summary-breakdown">
+                    <div v-for="(severity, description) in vectorInstance.severityBreakdown" :key="description">
+                        <span>{{ description }}</span>
+                        <strong>{{ severity }}</strong>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section v-else class="report-view">
+            <div class="report-editor no-print">
+                <div class="intro-card">
+                    <div>
+                        <p class="eyebrow">Documentation</p>
+                        <h2>Rapport de vulnérabilité</h2>
+                        <p>Décrivez la vulnérabilité et sa remédiation. Le score, le vecteur et les justifications CVSS sont repris automatiquement depuis le calculateur.</p>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn" type="button" @click="printReport">Imprimer / PDF</button>
+                        <button class="btn" type="button" @click="copyMarkdown">Copier le Markdown</button>
+                        <button class="btn btn-primary" type="button" @click="setView('calculator')">Retour au calcul</button>
+                    </div>
+                </div>
+
+                <div class="report-form-grid">
+                    <div class="form-field full">
+                        <label for="report-title">Titre de la vulnérabilité</label>
+                        <input id="report-title" type="text" v-model="report.title" placeholder="Ex. Contournement du contrôle d'accès">
+                    </div>
+                    <div class="form-field">
+                        <label for="report-reference">Référence</label>
+                        <input id="report-reference" type="text" v-model="report.reference" placeholder="Ex. WEB-001">
+                    </div>
+                    <div class="form-field">
+                        <label for="report-target">Cible / composant</label>
+                        <input id="report-target" type="text" v-model="report.target" placeholder="Ex. https://example.test/admin">
+                    </div>
+                    <div class="form-field">
+                        <label for="report-date">Date</label>
+                        <input id="report-date" type="date" v-model="report.date">
+                    </div>
+                    <div class="form-field">
+                        <label for="report-author">Auteur</label>
+                        <input id="report-author" type="text" v-model="report.author" placeholder="Nom / équipe">
+                    </div>
+                    <div class="form-field full">
+                        <label for="report-description">Description</label>
+                        <textarea id="report-description" rows="6" v-model="report.description" placeholder="Décrivez la vulnérabilité, son contexte et les conditions nécessaires à son exploitation."></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label for="report-impact-confidentiality">Impact — confidentialité</label>
+                        <textarea id="report-impact-confidentiality" rows="4" v-model="report.impactConfidentiality" placeholder="Données ou informations accessibles..." ></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label for="report-impact-integrity">Impact — intégrité</label>
+                        <textarea id="report-impact-integrity" rows="4" v-model="report.impactIntegrity" placeholder="Données ou actions pouvant être modifiées..." ></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label for="report-impact-availability">Impact — disponibilité</label>
+                        <textarea id="report-impact-availability" rows="4" v-model="report.impactAvailability" placeholder="Effets sur la disponibilité..." ></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label for="report-evidence">Preuve / PoC</label>
+                        <textarea id="report-evidence" rows="6" v-model="report.evidence" placeholder="Requête, réponse, étapes de reproduction ou extrait de preuve."></textarea>
+                    </div>
+                    <div class="form-field full">
+                        <label for="report-remediation">Recommandation / remédiation</label>
+                        <textarea id="report-remediation" rows="6" v-model="report.remediation" placeholder="Décrivez la correction recommandée et, si nécessaire, les mesures compensatoires."></textarea>
+                    </div>
+                    <div class="form-field full">
+                        <label for="report-references">Références</label>
+                        <textarea id="report-references" rows="3" v-model="report.references" placeholder="CVE, documentation, ticket, lien, référence interne... Une référence par ligne."></textarea>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
-    <!-- Script -->
-    <script src="cvss40.js"></script>
-    <script src="app.js"></script>
+
+            <article class="report-preview" id="report-preview">
+                <div class="report-cover">
+                    <p class="eyebrow">Rapport de vulnérabilité</p>
+                    <h1>{{ report.title || 'Vulnérabilité sans titre' }}</h1>
+                    <div class="report-meta">
+                        <span v-if="report.reference"><strong>Référence :</strong> {{ report.reference }}</span>
+                        <span v-if="report.target"><strong>Cible :</strong> {{ report.target }}</span>
+                        <span v-if="report.date"><strong>Date :</strong> {{ formatDate(report.date) }}</span>
+                        <span v-if="report.author"><strong>Auteur :</strong> {{ report.author }}</span>
+                    </div>
+                </div>
+
+                <div class="report-section" v-if="report.description">
+                    <h2>Description</h2>
+                    <p class="preserve-lines">{{ report.description }}</p>
+                </div>
+
+                <div class="report-section">
+                    <h2>Évaluation CVSS v4.0</h2>
+                    <div class="report-score-grid">
+                        <div class="report-score-box">
+                            <span class="report-score-label">Score</span>
+                            <strong :class="getSeverityClass(severityRating)">{{ score }}</strong>
+                            <span>{{ severityRating }}</span>
+                        </div>
+                        <div class="report-vector-box">
+                            <span class="report-score-label">Vecteur</span>
+                            <code>{{ vector }}</code>
+                        </div>
+                    </div>
+                    <p class="generated-summary">{{ generatedSummary }}</p>
+                </div>
+
+                <div class="report-section">
+                    <h2>Justification des métriques</h2>
+                    <div class="report-metrics">
+                        <div v-for="metric in reportMetrics" :key="metric.short" class="report-metric-row">
+                            <div>
+                                <strong>{{ metric.short }}</strong>
+                                <span>{{ metric.name }}</span>
+                            </div>
+                            <div>
+                                <strong>{{ metric.valueLabel }}</strong>
+                                <p v-if="metric.justification">{{ metric.justification }}</p>
+                                <p v-else class="muted">Aucune justification renseignée.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-section report-impact" v-if="report.impactConfidentiality || report.impactIntegrity || report.impactAvailability">
+                    <h2>Impact</h2>
+                    <div v-if="report.impactConfidentiality"><h3>Confidentialité</h3><p class="preserve-lines">{{ report.impactConfidentiality }}</p></div>
+                    <div v-if="report.impactIntegrity"><h3>Intégrité</h3><p class="preserve-lines">{{ report.impactIntegrity }}</p></div>
+                    <div v-if="report.impactAvailability"><h3>Disponibilité</h3><p class="preserve-lines">{{ report.impactAvailability }}</p></div>
+                </div>
+
+                <div class="report-section" v-if="report.evidence">
+                    <h2>Preuve / PoC</h2>
+                    <pre class="evidence-block">{{ report.evidence }}</pre>
+                </div>
+
+                <div class="report-section" v-if="report.remediation">
+                    <h2>Recommandation / remédiation</h2>
+                    <p class="preserve-lines">{{ report.remediation }}</p>
+                </div>
+
+                <div class="report-section" v-if="report.references">
+                    <h2>Références</h2>
+                    <p class="preserve-lines">{{ report.references }}</p>
+                </div>
+
+                <footer class="report-footer">
+                    Généré avec le calculateur CVSS 4.0 — le score et le vecteur sont calculés par le moteur CVSS fourni avec l'application.
+                </footer>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="cvss40.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
-

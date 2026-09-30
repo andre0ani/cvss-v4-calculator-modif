@@ -1,12 +1,41 @@
-# CVSS v4.0 calculator
-The CVSS v4.0 Calculator is built based on the Common Vulnerability Scoring System (CVSS) version 4.0 [Specification Document](https://www.first.org/cvss/v4.0/specification-document). This document serves as the authoritative reference for understanding how to calculate the severity of vulnerabilities.
+# Calculateur CVSS 4.0 — Français
 
-This project is a web-based application that calculates the CVSS score for a given vulnerability. The core logic is implemented using JavaScript classes that encapsulate the CVSS metrics, scoring calculations, and vector string manipulations:
+Version française et enrichie du calculateur CVSS v4.0.
 
-- The `Vector` class handles the CVSS vector string and the associated metrics. It is the backbone of the application's logic, providing methods to update and validate the vector string, compute equivalent classes, and derive metrics values.
-- The `CVSS40` class is responsible for calculating the CVSS v4.0 score. It interacts with an instance of the `Vector` class to derive the score and determine the severity level.
+## Fonctionnalités
 
-The application is live and can be accessed at [CVSS v4.0 Calculator](https://redhatproductsecurity.github.io/cvss-v4-calculator/).
+- Calcul CVSS v4.0 à partir des métriques du moteur fourni par FIRST.
+- Vecteur CVSS conservé dans l'URL.
+- Explications visibles pour les métriques et les valeurs sélectionnées.
+- Justification libre pour chaque métrique.
+- Synthèse textuelle générée à partir des métriques choisies.
+- Mode **Rapport de vulnérabilité** séparé du calculateur.
+- Reprise automatique du score, du vecteur et des justifications dans le rapport.
+- Sauvegarde locale du rapport et des justifications dans le navigateur.
+- Copie du vecteur et du rapport Markdown.
+- Impression du rapport / génération d'un PDF via la fonction d'impression du navigateur.
+- Interface responsive et navigation au clavier.
 
-## License
-This project is licensed under the BSD-2-Clause License. See the [LICENSE](./LICENSE) file for more information.
+## Moteur CVSS
+
+Le fichier `cvss40.js` est conservé comme moteur de calcul et n'est pas modifié par cette version de l'interface.
+
+## Utilisation
+
+L'application peut être servie comme site statique. Ouvrir directement `index.html` peut fonctionner selon les restrictions du navigateur, mais un petit serveur HTTP local est recommandé pour permettre le chargement de `metrics.json`.
+
+Par exemple :
+
+```bash
+python3 -m http.server 8080
+```
+
+Puis ouvrir `http://localhost:8080/`.
+
+## Données locales
+
+Les justifications et le rapport sont enregistrés uniquement dans le `localStorage` du navigateur. Aucune donnée de rapport n'est envoyée par l'application vers un serveur.
+
+## Licence
+
+Voir `LICENSE` pour les informations de licence du projet d'origine.
