@@ -1,724 +1,724 @@
 {
-  "Métriques de Base": {
-    "fill": "supplier",
-    "metric_groups": {
-      "Métriques d’exploitabilité": {
-        "Vecteur d'Attaque (AV)": {
-          "tooltip": "Cette métrique reflète le contexte dans lequel l'exploitation d'une vulnérabilité est possible. La valeur de cette métrique (et par conséquent la gravité qui en résulte) sera plus élevée si l'attaquant peut être distant (logiquement ou physiquement) pour exploiter le système vulnérable. L'hypothèse est que plus l'attaque est possible à distance, plus le nombre potentiel d'attaquants est élevé, ce qui justifie une gravité plus importante.",
-          "short": "AV",
-          "options": {
-            "Réseau (N)": {
-              "tooltip": "Le système vulnérable est connecté à la pile réseau et les attaquants potentiels incluent l'ensemble d'Internet. Une telle vulnérabilité est dite 'explorable à distance' et est exploitable via un protocole à un ou plusieurs sauts réseau (par ex. : via des routeurs).",
-              "value": "N"
+    "Métriques de Base": {
+        "fill": "supplier",
+        "metric_groups": {
+            "Métriques d’exploitabilité": {
+                "Vecteur d'Attaque (AV)": {
+                    "tooltip": "Cette métrique reflète le contexte dans lequel l'exploitation d'une vulnérabilité est possible. La valeur de cette métrique (et par conséquent la gravité qui en résulte) sera plus élevée si l'attaquant peut être distant (logiquement ou physiquement) pour exploiter le système vulnérable. L'hypothèse est que plus l'attaque est possible à distance, plus le nombre potentiel d'attaquants est élevé, ce qui justifie une gravité plus importante.",
+                    "short": "AV",
+                    "options": {
+                        "Réseau (N)": {
+                            "tooltip": "Le système vulnérable est connecté à la pile réseau et les attaquants potentiels incluent l'ensemble d'Internet. Une telle vulnérabilité est dite 'explorable à distance' et est exploitable via un protocole à un ou plusieurs sauts réseau (par ex. : via des routeurs).",
+                            "value": "N"
+                        },
+                        "Adjacent (A)": {
+                            "tooltip": "Le système vulnérable est lié à une pile de protocoles mais l'attaque est limitée à une topologie logiquement adjacente (ex. : même réseau local, Bluetooth, VPN).",
+                            "value": "A"
+                        },
+                        "Local (L)": {
+                            "tooltip": "Le système vulnérable n'est pas connecté à la pile réseau. L'attaquant doit accéder au système en local (clavier, console) ou via un accès distant (SSH) ou par l'interaction d'un utilisateur (ingénierie sociale).",
+                            "value": "L"
+                        },
+                        "Physique (P)": {
+                            "tooltip": "L'attaque nécessite un accès physique au système vulnérable. Cela peut être bref (attaque type 'evil maid') ou prolongé.",
+                            "value": "P"
+                        }
+                    },
+                    "selected": "N"
+                },
+                "Complexité de l'Attaque (AC)": {
+                    "tooltip": "Cette métrique mesure les actions nécessaires que l'attaquant doit entreprendre pour contourner les mécanismes de sécurité préexistants afin de mener à bien une exploitation. Une vulnérabilité simple à exploiter aura une complexité plus faible qu'une nécessitant des personnalisations spécifiques.",
+                    "short": "AC",
+                    "options": {
+                        "Bas (L)": {
+                            "tooltip": "L'attaquant n'a besoin d'aucune action particulière pour exploiter la vulnérabilité. L'exploitation est fiable et reproductible.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "L'exploitation réussie dépend du contournement de techniques de sécurité telles que l'ASLR ou le DEP, ou nécessite l'obtention de secrets propres à la cible (ex. : clés cryptographiques).",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "L"
+                },
+                "Prérequis de l'Attaque (AT)": {
+                    "tooltip": "Cette métrique reflète les conditions de déploiement et d'exécution préalables du système vulnérable qui permettent l'attaque. Contrairement à la complexité d'attaque, ces conditions ne visent pas à empêcher explicitement les attaques, mais découlent naturellement du fonctionnement du système.",
+                    "short": "AT",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "L'attaque ne dépend d'aucune condition particulière de déploiement ou d'exécution. L'exploit peut être réalisé dans la plupart des cas.",
+                            "value": "N"
+                        },
+                        "Présent (P)": {
+                            "tooltip": "L'attaque nécessite certaines conditions spécifiques, comme une course critique ou la présence d'un attaquant sur le chemin réseau entre la cible et la ressource (ex. : attaque de type 'man-in-the-middle').",
+                            "value": "P"
+                        }
+                    },
+                    "selected": "N"
+                },
+                "Privilèges Requis (PR)": {
+                    "tooltip": "Cette métrique indique le niveau de privilèges qu'un attaquant doit avoir avant de pouvoir exploiter la vulnérabilité. La manière dont ces privilèges sont obtenus (ex. : compte gratuit) n'est pas prise en compte ici.",
+                    "short": "PR",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "L'attaquant n'a besoin d'aucun privilège pour mener l'attaque. Il n'a pas accès à des fichiers ou paramètres du système vulnérable.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "L'attaquant a des privilèges limités, généralement liés à un seul utilisateur. Il peut accéder à des ressources non sensibles.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "L'attaquant dispose de privilèges importants, comme des droits administrateur, lui permettant un accès complet au système vulnérable.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "N"
+                },
+                "Interaction Utilisateur (UI)": {
+                    "tooltip": "Cette métrique indique si un utilisateur autre que l'attaquant doit interagir avec le système pour que l'attaque réussisse. Elle mesure le degré d'autonomie de l'attaquant.",
+                    "short": "UI",
+                    "options": {
+                        "Aucune (N)": {
+                            "tooltip": "L'exploitation de la vulnérabilité ne nécessite aucune interaction humaine autre que celle de l'attaquant.",
+                            "value": "N"
+                        },
+                        "Passive (P)": {
+                            "tooltip": "L'utilisateur ciblé doit interagir de manière limitée avec le système et la charge utile, sans contourner activement les protections.",
+                            "value": "P"
+                        },
+                        "Active (A)": {
+                            "tooltip": "L'utilisateur ciblé doit effectuer des actions spécifiques qui peuvent désactiver les mécanismes de protection du système, permettant ainsi l'exploitation.",
+                            "value": "A"
+                        }
+                    },
+                    "selected": "N"
+                }
             },
-            "Adjacent (A)": {
-              "tooltip": "Le système vulnérable est lié à une pile de protocoles mais l'attaque est limitée à une topologie logiquement adjacente (ex. : même réseau local, Bluetooth, VPN).",
-              "value": "A"
+            "Métriques d’impact sur le système vulnérable": {
+                "Confidentialité (VC)": {
+                    "tooltip": "Cette métrique mesure l'impact sur la confidentialité des informations gérées par le SYSTÈME VULNÉRABLE en raison d'une vulnérabilité exploitée avec succès. La confidentialité consiste à limiter l'accès et la divulgation des informations aux seuls utilisateurs autorisés, ainsi qu'à empêcher l'accès ou la divulgation à des personnes non autorisées.",
+                    "short": "VC",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "Il n’y a aucune perte de confidentialité au sein du système vulnérable.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Il y a une certaine perte de confidentialité. Un accès à des informations restreintes est obtenu, mais l’attaquant ne contrôle pas quelles informations sont accessibles, ou bien la quantité ou la nature des données compromises reste limitée. Cette divulgation d’informations ne provoque pas de perte directe et grave pour le système vulnérable.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Il y a une perte totale de confidentialité, entraînant la divulgation de toutes les informations contenues dans le système vulnérable à l'attaquant. Alternativement, un accès à certaines informations restreintes est obtenu, mais les données divulguées ont un impact direct et grave. Par exemple, un attaquant vole le mot de passe de l’administrateur ou les clés de chiffrement privées d’un serveur web.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "N"
+                },
+                "Intégrité (VI)": {
+                    "tooltip": "Cette métrique mesure l'impact sur l'intégrité d'une vulnérabilité exploitée avec succès. L'intégrité fait référence à la fiabilité et à l'exactitude des informations. L'intégrité du SYSTÈME VULNÉRABLE est compromise lorsqu'un attaquant modifie des données du système sans autorisation. Elle est également affectée lorsqu'un utilisateur peut nier avoir effectué des actions critiques dans le système (par exemple, en raison d'une journalisation insuffisante).",
+                    "short": "VI",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "Il n’y a aucune perte d'intégrité au sein du système vulnérable.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "La modification de données est possible, mais l’attaquant ne contrôle pas les conséquences de cette modification, ou bien l’étendue des modifications reste limitée. Ces altérations n’ont pas d’impact direct et grave sur le système vulnérable.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Il y a une perte totale d'intégrité ou une absence complète de protection. Par exemple, l'attaquant est capable de modifier tout ou partie des fichiers protégés par le système vulnérable. Alternativement, seules certaines modifications sont possibles, mais celles-ci ont des conséquences malveillantes directes et graves pour le système vulnérable.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "N"
+                },
+                "Disponibilité (VA)": {
+                    "tooltip": "Cette métrique mesure l'impact sur la disponibilité du SYSTÈME VULNÉRABLE résultant d'une vulnérabilité exploitée avec succès. Alors que les métriques d'impact de Confidentialité et d'Intégrité s'appliquent à la perte de confidentialité ou d'intégrité des données (par exemple, informations, fichiers) utilisées par le système, cette métrique fait référence à la perte de disponibilité du système impacté lui-même, comme un service en réseau (par exemple, web, base de données, email). Puisque la disponibilité fait référence à l'accessibilité des ressources d'information, les attaques qui consomment la bande passante réseau, les cycles processeur ou l'espace disque affectent toutes la disponibilité d'un système.",
+                    "short": "VA",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "Il n’y a aucun impact sur la disponibilité du Système Vulnérable.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Les performances sont réduites ou il y a des interruptions dans la disponibilité des ressources. Même si l’exploitation répétée de la vulnérabilité est possible, l’attaquant n’a pas la capacité de refuser complètement le service aux utilisateurs légitimes. Les ressources du Système Vulnérable sont soit partiellement disponibles en permanence, soit pleinement disponibles seulement par intermittence, mais globalement il n’y a pas de conséquence directe et grave pour le Système Vulnérable.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Il y a une perte totale de disponibilité, ce qui permet à l’attaquant de refuser totalement l’accès aux ressources du Système Vulnérable ; cette perte est soit soutenue (tant que l’attaquant continue l’attaque) soit persistante (la condition persiste même après la fin de l’attaque). Alternativement, l’attaquant a la capacité de refuser une certaine disponibilité, mais la perte de disponibilité entraîne une conséquence directe et grave pour le Système Vulnérable (par exemple, l’attaquant ne peut pas perturber les connexions existantes, mais peut empêcher de nouvelles connexions ; l’attaquant peut exploiter à plusieurs reprises une vulnérabilité qui, à chaque attaque réussie, provoque une fuite de mémoire faible, mais après plusieurs exploitations rend le service complètement indisponible).",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "N"
+                }
             },
-            "Local (L)": {
-              "tooltip": "Le système vulnérable n'est pas connecté à la pile réseau. L'attaquant doit accéder au système en local (clavier, console) ou via un accès distant (SSH) ou par l'interaction d'un utilisateur (ingénierie sociale).",
-              "value": "L"
-            },
-            "Physique (P)": {
-              "tooltip": "L'attaque nécessite un accès physique au système vulnérable. Cela peut être bref (attaque type 'evil maid') ou prolongé.",
-              "value": "P"
+            "Métriques d’impact sur les systèmes subséquents": {
+                "Confidentialité (SC)": {
+                    "tooltip": "Cette métrique mesure l’impact sur la confidentialité des informations gérées par le SYSTÈME SUBSÉQUENT en raison d’une vulnérabilité exploitée avec succès. La confidentialité se réfère à la limitation de l’accès et de la divulgation des informations uniquement aux utilisateurs autorisés, ainsi qu’à la prévention de l’accès ou de la divulgation aux utilisateurs non autorisés.",
+                    "short": "SC",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "Il n’y a aucune perte de confidentialité au sein du Système Subsèquent ou tout impact sur la confidentialité est limité au Système Vulnérable.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Il y a une certaine perte de confidentialité. Un accès à des informations restreintes est obtenu, mais l’attaquant n’a pas le contrôle sur les informations obtenues, ou la quantité ou le type de perte est limité. La divulgation des informations ne cause pas de perte directe et grave pour le Système Subsèquent.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Il y a une perte totale de confidentialité, entraînant la divulgation de toutes les ressources du Système Subsèquent à l’attaquant. Alternativement, l’accès est obtenu à seulement une partie des informations restreintes, mais les informations divulguées ont un impact direct et grave. Par exemple, un attaquant vole le mot de passe de l’administrateur ou les clés de chiffrement privées d’un serveur web.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "N"
+                },
+                "Intégrité (SI)": {
+                    "tooltip": "Cette métrique mesure l’impact sur l’intégrité d’une vulnérabilité exploitée avec succès. L’intégrité fait référence à la fiabilité et à la véracité des informations. L’intégrité du SYSTÈME SUBSÉQUENT est affectée lorsqu’un attaquant effectue une modification non autorisée des données du système. L’intégrité est également affectée lorsqu’un utilisateur du système peut nier des actions critiques effectuées dans le contexte du système (par exemple, en raison d’une journalisation insuffisante).",
+                    "short": "SI",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "Il n’y a aucune perte d’intégrité au sein du Système Subsèquent ou tout impact sur l’intégrité est limité au Système Vulnérable.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "La modification des données est possible, mais l’attaquant n’a pas le contrôle sur les conséquences de la modification, ou l’étendue des modifications est limitée. La modification des données n’a pas d’impact direct et grave sur le Système Subsèquent.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Il y a une perte totale d’intégrité, ou une perte complète de protection. Par exemple, l’attaquant est capable de modifier un ou plusieurs fichiers protégés par le Système Subsèquent. Alternativement, seuls certains fichiers peuvent être modifiés, mais une modification malveillante entraînerait une conséquence directe et grave pour le Système Subsèquent.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "N"
+                },
+                "Disponibilité (SA)": {
+                    "tooltip": "Cette métrique mesure l’impact sur la disponibilité du SYSTÈME SUBSÉQUENT résultant d’une vulnérabilité exploitée avec succès. Alors que les métriques d’impact de Confidentialité et d’Intégrité s’appliquent à la perte de confidentialité ou d’intégrité des données (par exemple, informations, fichiers) utilisées par le système, cette métrique fait référence à la perte de disponibilité du système impacté lui-même, comme un service en réseau (par exemple, web, base de données, email). Puisque la disponibilité fait référence à l’accessibilité des ressources d’information, les attaques qui consomment la bande passante réseau, les cycles processeur ou l’espace disque affectent toutes la disponibilité d’un système.",
+                    "short": "SA",
+                    "options": {
+                        "Aucun (N)": {
+                            "tooltip": "Il n’y a aucun impact sur la disponibilité du Système Subsèquent ou tout impact sur la disponibilité est limité au Système Vulnérable.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Les performances sont réduites ou il y a des interruptions dans la disponibilité des ressources. Même si l’exploitation répétée de la vulnérabilité est possible, l’attaquant n’a pas la capacité de refuser complètement le service aux utilisateurs légitimes. Les ressources du Système Subsèquent sont soit partiellement disponibles en permanence, soit pleinement disponibles seulement par intermittence, mais globalement il n’y a pas de conséquence directe et grave pour le Système Subsèquent.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Il y a une perte totale de disponibilité, permettant à l’attaquant de refuser complètement l’accès aux ressources du Système Subsèquent ; cette perte est soit soutenue (tant que l’attaquant continue l’attaque) soit persistante (la condition persiste même après la fin de l’attaque). Alternativement, l’attaquant a la capacité de refuser une certaine disponibilité, mais la perte de disponibilité entraîne une conséquence directe et grave pour le Système Subsèquent (par exemple, l’attaquant ne peut pas interrompre les connexions existantes, mais peut empêcher les nouvelles connexions ; l’attaquant peut exploiter à plusieurs reprises une vulnérabilité qui, à chaque attaque réussie, provoque une fuite de mémoire faible, mais après plusieurs exploitations rend le service complètement indisponible).",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "N"
+                }
             }
-          },
-          "selected": "N"
-        },
-        "Complexité de l'Attaque (AC)": {
-          "tooltip": "Cette métrique mesure les actions nécessaires que l'attaquant doit entreprendre pour contourner les mécanismes de sécurité préexistants afin de mener à bien une exploitation. Une vulnérabilité simple à exploiter aura une complexité plus faible qu'une nécessitant des personnalisations spécifiques.",
-          "short": "AC",
-          "options": {
-            "Bas (L)": {
-              "tooltip": "L'attaquant n'a besoin d'aucune action particulière pour exploiter la vulnérabilité. L'exploitation est fiable et reproductible.",
-              "value": "L"
-            },
-            "Haut (H)": {
-              "tooltip": "L'exploitation réussie dépend du contournement de techniques de sécurité telles que l'ASLR ou le DEP, ou nécessite l'obtention de secrets propres à la cible (ex. : clés cryptographiques).",
-              "value": "H"
-            }
-          },
-          "selected": "L"
-        },
-        "Prérequis de l'Attaque (AT)": {
-          "tooltip": "Cette métrique reflète les conditions de déploiement et d'exécution préalables du système vulnérable qui permettent l'attaque. Contrairement à la complexité d'attaque, ces conditions ne visent pas à empêcher explicitement les attaques, mais découlent naturellement du fonctionnement du système.",
-          "short": "AT",
-          "options": {
-            "Aucun (N)": {
-              "tooltip": "L'attaque ne dépend d'aucune condition particulière de déploiement ou d'exécution. L'exploit peut être réalisé dans la plupart des cas.",
-              "value": "N"
-            },
-            "Présent (P)": {
-              "tooltip": "L'attaque nécessite certaines conditions spécifiques, comme une course critique ou la présence d'un attaquant sur le chemin réseau entre la cible et la ressource (ex. : attaque de type 'man-in-the-middle').",
-              "value": "P"
-            }
-          },
-          "selected": "N"
-        },
-        "Privilèges Requis (PR)": {
-          "tooltip": "Cette métrique indique le niveau de privilèges qu'un attaquant doit avoir avant de pouvoir exploiter la vulnérabilité. La manière dont ces privilèges sont obtenus (ex. : compte gratuit) n'est pas prise en compte ici.",
-          "short": "PR",
-          "options": {
-            "Aucun (N)": {
-              "tooltip": "L'attaquant n'a besoin d'aucun privilège pour mener l'attaque. Il n'a pas accès à des fichiers ou paramètres du système vulnérable.",
-              "value": "N"
-            },
-            "Bas (L)": {
-              "tooltip": "L'attaquant a des privilèges limités, généralement liés à un seul utilisateur. Il peut accéder à des ressources non sensibles.",
-              "value": "L"
-            },
-            "Haut (H)": {
-              "tooltip": "L'attaquant dispose de privilèges importants, comme des droits administrateur, lui permettant un accès complet au système vulnérable.",
-              "value": "H"
-            }
-          },
-          "selected": "N"
-        },
-        "Interaction Utilisateur (UI)": {
-          "tooltip": "Cette métrique indique si un utilisateur autre que l'attaquant doit interagir avec le système pour que l'attaque réussisse. Elle mesure le degré d'autonomie de l'attaquant.",
-          "short": "UI",
-          "options": {
-            "Aucune (N)": {
-              "tooltip": "L'exploitation de la vulnérabilité ne nécessite aucune interaction humaine autre que celle de l'attaquant.",
-              "value": "N"
-            },
-            "Passive (P)": {
-              "tooltip": "L'utilisateur ciblé doit interagir de manière limitée avec le système et la charge utile, sans contourner activement les protections.",
-              "value": "P"
-            },
-            "Active (A)": {
-              "tooltip": "L'utilisateur ciblé doit effectuer des actions spécifiques qui peuvent désactiver les mécanismes de protection du système, permettant ainsi l'exploitation.",
-              "value": "A"
-            }
-          },
-          "selected": "N"
         }
-      },
-      "Métriques d’impact sur le système vulnérable": {
-        "Confidentialité (VC)": {
-          "tooltip": "Cette métrique mesure l'impact sur la confidentialité des informations gérées par le SYSTÈME VULNÉRABLE en raison d'une vulnérabilité exploitée avec succès. La confidentialité consiste à limiter l'accès et la divulgation des informations aux seuls utilisateurs autorisés, ainsi qu'à empêcher l'accès ou la divulgation à des personnes non autorisées.",
-          "short": "VC",
-          "options": {
-            "Haut (H)": {
-              "tooltip": "Il y a une perte totale de confidentialité, entraînant la divulgation de toutes les informations contenues dans le système vulnérable à l'attaquant. Alternativement, un accès à certaines informations restreintes est obtenu, mais les données divulguées ont un impact direct et grave. Par exemple, un attaquant vole le mot de passe de l’administrateur ou les clés de chiffrement privées d’un serveur web.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Il y a une certaine perte de confidentialité. Un accès à des informations restreintes est obtenu, mais l’attaquant ne contrôle pas quelles informations sont accessibles, ou bien la quantité ou la nature des données compromises reste limitée. Cette divulgation d’informations ne provoque pas de perte directe et grave pour le système vulnérable.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Il n’y a aucune perte de confidentialité au sein du système vulnérable.",
-              "value": "N"
+    },
+    "Métriques de menace": {
+        "fill": "consumer",
+        "metric_groups": {
+            "Métriques de menace": {
+                "Maturité de l’exploitation (E)": {
+                    "tooltip": "Cette métrique indique le niveau de maturité des techniques ou du code d'exploitation disponibles pour la vulnérabilité. Elle peut évoluer dans le temps.",
+                    "short": "E",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "Aucune évaluation spécifique de la maturité de l’exploitation n’est fournie.",
+                            "value": "X"
+                        },
+                        "Attaquée (A)": {
+                            "tooltip": "La vulnérabilité est exploitée activement ou l’exploitation est confirmée.",
+                            "value": "A"
+                        },
+                        "Preuve de concept (P)": {
+                            "tooltip": "Un code ou une preuve de concept fonctionnelle est disponible.",
+                            "value": "P"
+                        },
+                        "Non prouvée (U)": {
+                            "tooltip": "Aucun code d’exploitation fonctionnel n’est disponible ou la maturité de l’exploitation est inconnue.",
+                            "value": "U"
+                        }
+                    },
+                    "selected": "X"
+                }
             }
-          },
-          "selected": "N"
-        },
-        "Intégrité (VI)": {
-          "tooltip": "Cette métrique mesure l'impact sur l'intégrité d'une vulnérabilité exploitée avec succès. L'intégrité fait référence à la fiabilité et à l'exactitude des informations. L'intégrité du SYSTÈME VULNÉRABLE est compromise lorsqu'un attaquant modifie des données du système sans autorisation. Elle est également affectée lorsqu'un utilisateur peut nier avoir effectué des actions critiques dans le système (par exemple, en raison d'une journalisation insuffisante).",
-          "short": "VI",
-          "options": {
-            "Haut (H)": {
-              "tooltip": "Il y a une perte totale d'intégrité ou une absence complète de protection. Par exemple, l'attaquant est capable de modifier tout ou partie des fichiers protégés par le système vulnérable. Alternativement, seules certaines modifications sont possibles, mais celles-ci ont des conséquences malveillantes directes et graves pour le système vulnérable.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "La modification de données est possible, mais l’attaquant ne contrôle pas les conséquences de cette modification, ou bien l’étendue des modifications reste limitée. Ces altérations n’ont pas d’impact direct et grave sur le système vulnérable.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Il n’y a aucune perte d'intégrité au sein du système vulnérable.",
-              "value": "N"
-            }
-          },
-          "selected": "N"
-        },
-        "Disponibilité (VA)": {
-          "tooltip": "Cette métrique mesure l'impact sur la disponibilité du SYSTÈME VULNÉRABLE résultant d'une vulnérabilité exploitée avec succès. Alors que les métriques d'impact de Confidentialité et d'Intégrité s'appliquent à la perte de confidentialité ou d'intégrité des données (par exemple, informations, fichiers) utilisées par le système, cette métrique fait référence à la perte de disponibilité du système impacté lui-même, comme un service en réseau (par exemple, web, base de données, email). Puisque la disponibilité fait référence à l'accessibilité des ressources d'information, les attaques qui consomment la bande passante réseau, les cycles processeur ou l'espace disque affectent toutes la disponibilité d'un système.",
-          "short": "VA",
-          "options": {
-            "Haut (H)": {
-              "tooltip": "Il y a une perte totale de disponibilité, ce qui permet à l’attaquant de refuser totalement l’accès aux ressources du Système Vulnérable ; cette perte est soit soutenue (tant que l’attaquant continue l’attaque) soit persistante (la condition persiste même après la fin de l’attaque). Alternativement, l’attaquant a la capacité de refuser une certaine disponibilité, mais la perte de disponibilité entraîne une conséquence directe et grave pour le Système Vulnérable (par exemple, l’attaquant ne peut pas perturber les connexions existantes, mais peut empêcher de nouvelles connexions ; l’attaquant peut exploiter à plusieurs reprises une vulnérabilité qui, à chaque attaque réussie, provoque une fuite de mémoire faible, mais après plusieurs exploitations rend le service complètement indisponible).",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Les performances sont réduites ou il y a des interruptions dans la disponibilité des ressources. Même si l’exploitation répétée de la vulnérabilité est possible, l’attaquant n’a pas la capacité de refuser complètement le service aux utilisateurs légitimes. Les ressources du Système Vulnérable sont soit partiellement disponibles en permanence, soit pleinement disponibles seulement par intermittence, mais globalement il n’y a pas de conséquence directe et grave pour le Système Vulnérable.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Il n’y a aucun impact sur la disponibilité du Système Vulnérable.",
-              "value": "N"
-            }
-          },
-          "selected": "N"
         }
-      },
-      "Métriques d’impact sur les systèmes subséquents": {
-        "Confidentialité (SC)": {
-          "tooltip": "Cette métrique mesure l’impact sur la confidentialité des informations gérées par le SYSTÈME SUBSÉQUENT en raison d’une vulnérabilité exploitée avec succès. La confidentialité se réfère à la limitation de l’accès et de la divulgation des informations uniquement aux utilisateurs autorisés, ainsi qu’à la prévention de l’accès ou de la divulgation aux utilisateurs non autorisés.",
-          "short": "SC",
-          "options": {
-            "Haut (H)": {
-              "tooltip": "Il y a une perte totale de confidentialité, entraînant la divulgation de toutes les ressources du Système Subsèquent à l’attaquant. Alternativement, l’accès est obtenu à seulement une partie des informations restreintes, mais les informations divulguées ont un impact direct et grave. Par exemple, un attaquant vole le mot de passe de l’administrateur ou les clés de chiffrement privées d’un serveur web.",
-              "value": "H"
+    },
+    "Environnemental (Contexte de l’environnement)": {
+        "fill": "consumer",
+        "metric_groups": {
+            "Exigences de sécurité": {
+                "Confidentialité (CR)": {
+                    "tooltip": "Importance de la confidentialité du système vulnérable dans l’environnement de l’organisation.",
+                    "short": "CR",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "Aucune exigence spécifique n’est définie.",
+                            "value": "X"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Confidentialité particulièrement importante pour cet actif.",
+                            "value": "H"
+                        },
+                        "Moyen (M)": {
+                            "tooltip": "Confidentialité d’importance intermédiaire pour cet actif.",
+                            "value": "M"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Confidentialité relativement peu importante pour cet actif.",
+                            "value": "L"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Intégrité (IR)": {
+                    "tooltip": "Importance de l'intégrité du système vulnérable dans l’environnement de l’organisation.",
+                    "short": "IR",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "Aucune exigence spécifique n’est définie.",
+                            "value": "X"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Intégrité particulièrement importante pour cet actif.",
+                            "value": "H"
+                        },
+                        "Moyen (M)": {
+                            "tooltip": "Intégrité d’importance intermédiaire pour cet actif.",
+                            "value": "M"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Intégrité relativement peu importante pour cet actif.",
+                            "value": "L"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Disponibilité (AR)": {
+                    "tooltip": "Importance de la disponibilité du système vulnérable dans l’environnement de l’organisation.",
+                    "short": "AR",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "Aucune exigence spécifique n’est définie.",
+                            "value": "X"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Disponibilité particulièrement importante pour cet actif.",
+                            "value": "H"
+                        },
+                        "Moyen (M)": {
+                            "tooltip": "Disponibilité d’importance intermédiaire pour cet actif.",
+                            "value": "M"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Disponibilité relativement peu importante pour cet actif.",
+                            "value": "L"
+                        }
+                    },
+                    "selected": "X"
+                }
             },
-            "Bas (L)": {
-              "tooltip": "Il y a une certaine perte de confidentialité. Un accès à des informations restreintes est obtenu, mais l’attaquant n’a pas le contrôle sur les informations obtenues, ou la quantité ou le type de perte est limité. La divulgation des informations ne cause pas de perte directe et grave pour le Système Subsèquent.",
-              "value": "L"
+            "Métriques d’exploitabilité": {
+                "Vecteur d'Attaque (MAV)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique reflète le contexte dans lequel l’exploitation de la vulnérabilité est possible. La valeur de cette métrique (et par conséquent la gravité résultante) sera plus élevée plus l’attaquant peut être distant (logiquement et physiquement) pour exploiter le système vulnérable. L’hypothèse est que le nombre d’attaquants potentiels pour une vulnérabilité exploitable à distance via un réseau est supérieur au nombre d’attaquants potentiels pouvant exploiter une vulnérabilité nécessitant un accès physique à un appareil, justifiant ainsi une gravité plus importante.",
+                    "short": "MAV",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Réseau (N)": {
+                            "tooltip": "La valeur de cette métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "N"
+                        },
+                        "Adjacent (A)": {
+                            "tooltip": "La valeur de cette métrique a la même définition que celle de la métrique de base définie ci-dessus.",
+                            "value": "A"
+                        },
+                        "Local (L)": {
+                            "tooltip": "La valeur de cette métrique a la même définition que celle de la métrique de base définie ci-dessus.",
+                            "value": "L"
+                        },
+                        "Physique (P)": {
+                            "tooltip": "La valeur de cette métrique a la même définition que celle de la métrique de base définie ci-dessus.",
+                            "value": "P"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Complexité de l'Attaque(MAC)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique capture les actions mesurables que l’attaquant doit accomplir pour contourner ou échapper activement aux conditions intégrées de sécurité afin d’obtenir un exploit fonctionnel. Ce sont des conditions dont le but principal est d’augmenter la sécurité et/ou la complexité de l’ingénierie des exploits. Une vulnérabilité exploitable sans variable spécifique à la cible a une complexité inférieure à une vulnérabilité nécessitant une personnalisation non triviale. Cette métrique vise à refléter les mécanismes de sécurité utilisés par le système vulnérable.",
+                    "short": "MAC",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Prérequis de l'Attaque (MAT)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique capture les conditions préalables de déploiement et d’exécution ou variables du système vulnérable qui permettent l’attaque. Elles diffèrent des techniques/technologies améliorant la sécurité (cf. Attack Complexity) car le but principal de ces conditions n’est pas d’atténuer explicitement les attaques, mais elles émergent naturellement comme conséquence du déploiement et de l’exécution du système vulnérable.",
+                    "short": "MAT",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "N"
+                        },
+                        "Présent (P)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "P"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Privilèges Requis (MPR)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique décrit le niveau de privilèges que l’attaquant doit posséder avant d’exploiter avec succès la vulnérabilité. La méthode par laquelle l’attaquant obtient ces privilèges (ex. comptes d’essai gratuits) est hors du cadre de cette métrique. En général, les comptes auto-provisionnés ne constituent pas une exigence de privilège si l’attaquant peut s’octroyer des privilèges dans le cadre de l’attaque.",
+                    "short": "MPR",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "N"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "L"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Interaction Utilisateur (MUI)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique capture la nécessité d’une interaction humaine, autre que l’attaquant, pour réussir la compromission du système vulnérable. Elle détermine si la vulnérabilité peut être exploitée uniquement à la volonté de l’attaquant, ou si un autre utilisateur (ou processus initié par un utilisateur) doit participer d’une manière ou d’une autre.",
+                    "short": "MUI",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Aucune (N)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "N"
+                        },
+                        "Passive (P)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "P"
+                        },
+                        "Active (A)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "A"
+                        }
+                    },
+                    "selected": "X"
+                }
             },
-            "Aucun (N)": {
-              "tooltip": "Il n’y a aucune perte de confidentialité au sein du Système Subsèquent ou tout impact sur la confidentialité est limité au Système Vulnérable.",
-              "value": "N"
+            "Métriques d’impact sur le système vulnérable": {
+                "Confidentialité (MVC)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique mesure l’impact sur la confidentialité des informations gérées par le SYSTÈME VULNÉRABLE dû à une vulnérabilité exploitée avec succès. La confidentialité désigne la limitation de l’accès et de la divulgation de l’information aux seuls utilisateurs autorisés, ainsi que la prévention d’accès ou de divulgation aux personnes non autorisées.",
+                    "short": "MVC",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "H"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "L"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "N"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Intégrité (MVI)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique mesure l’impact sur l’intégrité d’une vulnérabilité exploitée avec succès. L’intégrité se réfère à la fiabilité et la véracité de l’information. L’intégrité du SYSTÈME VULNÉRABLE est impactée lorsqu’un attaquant modifie de manière non autorisée les données système. L’intégrité est également impactée lorsqu’un utilisateur système peut contester des actions critiques réalisées dans le contexte du système (ex. manque de journalisation suffisante).",
+                    "short": "MVI",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "H"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "L"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "N"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Disponibilité (MVA)": {
+                    "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique mesure l’impact sur la disponibilité du SYSTÈME VULNÉRABLE résultant d’une vulnérabilité exploitée avec succès. Alors que les métriques d’impact Confidentialité et Intégrité concernent la perte de confidentialité ou d’intégrité des données (ex. informations, fichiers) utilisées par le système, cette métrique concerne la perte de disponibilité du système lui-même, comme un service réseau (ex. web, base de données, email). La disponibilité se réfère à l’accessibilité des ressources informationnelles ; les attaques consommant la bande passante réseau, par exemple, affectent la disponibilité.",
+                    "short": "MVA",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "H"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "L"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
+                            "value": "N"
+                        }
+                    },
+                    "selected": "X"
+                }
+            },
+            "Métriques d’impact sur les systèmes subséquents": {
+                "Confidentialité (MSC)": {
+                    "tooltip": "Impact environnemental modifié sur la confidentialité des systèmes subséquents.",
+                    "short": "MSC",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "Utilise la valeur de base SC.",
+                            "value": "X"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Impact important ou complet sur la confidentialité des systèmes subséquents.",
+                            "value": "H"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Impact limité sur la confidentialité des systèmes subséquents.",
+                            "value": "L"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Aucun impact sur la confidentialité des systèmes subséquents.",
+                            "value": "N"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Intégrité (MSI)": {
+                    "tooltip": "Impact environnemental modifié sur la intégrité des systèmes subséquents.",
+                    "short": "MSI",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "Utilise la valeur de base SI.",
+                            "value": "X"
+                        },
+                        "Présent (S)": {
+                            "tooltip": "Impact présent sur les systèmes subséquents, avec les conditions particulières définies par CVSS.",
+                            "value": "S"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Impact important ou complet sur la intégrité des systèmes subséquents.",
+                            "value": "H"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Impact limité sur la intégrité des systèmes subséquents.",
+                            "value": "L"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Aucun impact sur la intégrité des systèmes subséquents.",
+                            "value": "N"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Disponibilité (MSA)": {
+                    "tooltip": "Impact environnemental modifié sur la disponibilité des systèmes subséquents.",
+                    "short": "MSA",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "Utilise la valeur de base SA.",
+                            "value": "X"
+                        },
+                        "Présent (S)": {
+                            "tooltip": "Impact présent sur les systèmes subséquents, avec les conditions particulières définies par CVSS.",
+                            "value": "S"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Impact important ou complet sur la disponibilité des systèmes subséquents.",
+                            "value": "H"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "Impact limité sur la disponibilité des systèmes subséquents.",
+                            "value": "L"
+                        },
+                        "Aucun (N)": {
+                            "tooltip": "Aucun impact sur la disponibilité des systèmes subséquents.",
+                            "value": "N"
+                        }
+                    },
+                    "selected": "X"
+                }
             }
-          },
-          "selected": "N"
-        },
-        "Intégrité (SI)": {
-          "tooltip": "Cette métrique mesure l’impact sur l’intégrité d’une vulnérabilité exploitée avec succès. L’intégrité fait référence à la fiabilité et à la véracité des informations. L’intégrité du SYSTÈME SUBSÉQUENT est affectée lorsqu’un attaquant effectue une modification non autorisée des données du système. L’intégrité est également affectée lorsqu’un utilisateur du système peut nier des actions critiques effectuées dans le contexte du système (par exemple, en raison d’une journalisation insuffisante).",
-          "short": "SI",
-          "options": {
-            "Haut (H)": {
-              "tooltip": "Il y a une perte totale d’intégrité, ou une perte complète de protection. Par exemple, l’attaquant est capable de modifier un ou plusieurs fichiers protégés par le Système Subsèquent. Alternativement, seuls certains fichiers peuvent être modifiés, mais une modification malveillante entraînerait une conséquence directe et grave pour le Système Subsèquent.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "La modification des données est possible, mais l’attaquant n’a pas le contrôle sur les conséquences de la modification, ou l’étendue des modifications est limitée. La modification des données n’a pas d’impact direct et grave sur le Système Subsèquent.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Il n’y a aucune perte d’intégrité au sein du Système Subsèquent ou tout impact sur l’intégrité est limité au Système Vulnérable.",
-              "value": "N"
-            }
-          },
-          "selected": "N"
-        },
-        "Disponibilité (SA)": {
-          "tooltip": "Cette métrique mesure l’impact sur la disponibilité du SYSTÈME SUBSÉQUENT résultant d’une vulnérabilité exploitée avec succès. Alors que les métriques d’impact de Confidentialité et d’Intégrité s’appliquent à la perte de confidentialité ou d’intégrité des données (par exemple, informations, fichiers) utilisées par le système, cette métrique fait référence à la perte de disponibilité du système impacté lui-même, comme un service en réseau (par exemple, web, base de données, email). Puisque la disponibilité fait référence à l’accessibilité des ressources d’information, les attaques qui consomment la bande passante réseau, les cycles processeur ou l’espace disque affectent toutes la disponibilité d’un système.",
-          "short": "SA",
-          "options": {
-            "Haut (H)": {
-              "tooltip": "Il y a une perte totale de disponibilité, permettant à l’attaquant de refuser complètement l’accès aux ressources du Système Subsèquent ; cette perte est soit soutenue (tant que l’attaquant continue l’attaque) soit persistante (la condition persiste même après la fin de l’attaque). Alternativement, l’attaquant a la capacité de refuser une certaine disponibilité, mais la perte de disponibilité entraîne une conséquence directe et grave pour le Système Subsèquent (par exemple, l’attaquant ne peut pas interrompre les connexions existantes, mais peut empêcher les nouvelles connexions ; l’attaquant peut exploiter à plusieurs reprises une vulnérabilité qui, à chaque attaque réussie, provoque une fuite de mémoire faible, mais après plusieurs exploitations rend le service complètement indisponible).",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Les performances sont réduites ou il y a des interruptions dans la disponibilité des ressources. Même si l’exploitation répétée de la vulnérabilité est possible, l’attaquant n’a pas la capacité de refuser complètement le service aux utilisateurs légitimes. Les ressources du Système Subsèquent sont soit partiellement disponibles en permanence, soit pleinement disponibles seulement par intermittence, mais globalement il n’y a pas de conséquence directe et grave pour le Système Subsèquent.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Il n’y a aucun impact sur la disponibilité du Système Subsèquent ou tout impact sur la disponibilité est limité au Système Vulnérable.",
-              "value": "N"
-            }
-          },
-          "selected": "N"
         }
-      }
+    },
+    "Métriques Supplémentaires": {
+        "fill": "supplier",
+        "metric_groups": {
+            "": {
+                "Sécurité (S)": {
+                    "tooltip": "Lorsqu’un système a une utilisation prévue ou une adéquation à une finalité liée à la sécurité, il est possible que l’exploitation d’une vulnérabilité dans ce système ait un impact sur la Sécurité (Safety), qui peut être représenté dans le groupe des métriques supplémentaires. L’absence de valeur pour la métrique de Sécurité ne signifie PAS qu’il n’y ait pas d’impact lié à la sécurité.",
+                    "short": "S",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Négligeable (N)": {
+                            "tooltip": "Les conséquences de la vulnérabilité correspondent à la catégorie de conséquences « négligeables » définie par la norme IEC 61508.",
+                            "value": "N"
+                        },
+                        "Présent (P)": {
+                            "tooltip": "Les conséquences de la vulnérabilité correspondent à la définition des catégories de conséquences « marginales », « critiques » ou « catastrophiques » de la norme IEC 61508.",
+                            "value": "P"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Automatisable (AU)": {
+                    "tooltip": "La métrique « Automatisable » répond à la question : « Un attaquant peut-il automatiser l’exploitation de cette vulnérabilité sur plusieurs cibles ? », en se basant sur les étapes 1 à 4 de la kill chain [Hutchins et al., 2011]. Ces étapes sont la reconnaissance, l’armement, la livraison et l’exploitation.",
+                    "short": "AU",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Non (N)": {
+                            "tooltip": "Les attaquants ne peuvent pas automatiser de manière fiable les 4 étapes de la kill chain pour cette vulnérabilité pour une raison quelconque. Ces étapes sont la reconnaissance, l’armement, la livraison et l’exploitation.",
+                            "value": "N"
+                        },
+                        "Oui (Y)": {
+                            "tooltip": "Les attaquants peuvent automatiser de manière fiable les 4 étapes de la kill chain. Ces étapes sont la reconnaissance, l’armement, la livraison et l’exploitation (par exemple, la vulnérabilité est « propagable comme un ver »).",
+                            "value": "Y"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Récupération (R)": {
+                    "tooltip": "La récupération décrit la résilience d’un système à rétablir les services, en termes de performance et de disponibilité, après qu’une attaque a été effectuée.",
+                    "short": "R",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Automatique (A)": {
+                            "tooltip": "Le système rétablit automatiquement les services après qu’une attaque a été effectuée.",
+                            "value": "A"
+                        },
+                        "Utilisateur (U)": {
+                            "tooltip": "Le système nécessite une intervention manuelle de l’utilisateur pour rétablir les services après qu’une attaque a été effectuée.",
+                            "value": "U"
+                        },
+                        "Irrécupérable (I)": {
+                            "tooltip": "Les services du système sont irrécupérables par l’utilisateur après qu’une attaque a été effectuée.",
+                            "value": "I"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Densité de Valeur (V)": {
+                    "tooltip": "La Densité de Valeur décrit les ressources sur lesquelles l’attaquant prendra le contrôle lors d’un seul événement d’exploitation.",
+                    "short": "V",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Diffuse (D)": {
+                            "tooltip": "Le système vulnérable dispose de ressources limitées. Autrement dit, les ressources sur lesquelles l’attaquant prendra le contrôle lors d’un seul événement d’exploitation sont relativement faibles. Un exemple de Densité de Valeur Diffuse (c’est-à-dire limitée) serait une attaque exploitant une vulnérabilité d’un seul client de messagerie.",
+                            "value": "D"
+                        },
+                        "Concentrée (C)": {
+                            "tooltip": "Le système vulnérable est riche en ressources. De manière heuristique, ces systèmes relèvent souvent directement de la responsabilité des « opérateurs système » plutôt que des utilisateurs. Un exemple de Densité de Valeur Concentrée (c’est-à-dire étendue) serait une attaque contre un serveur de messagerie central.",
+                            "value": "C"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Effort de Réponse à la Vulnérabilité (RE)": {
+                    "tooltip": "L’objectif de la métrique d’Effort de Réponse à la Vulnérabilité est de fournir des informations complémentaires sur la difficulté pour les utilisateurs de fournir une réponse initiale à l’impact des vulnérabilités sur les produits et services déployés dans leur infrastructure. L’utilisateur peut ainsi prendre en compte cette information supplémentaire sur l’effort requis lors de la mise en place de mesures d’atténuation et/ou de la planification de la remédiation.",
+                    "short": "RE",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Bas (L)": {
+                            "tooltip": "L’effort requis pour répondre à une vulnérabilité est faible ou trivial. Parmi les exemples, on trouve : la communication d’une meilleure documentation, des contournements de configuration, ou des conseils du fournisseur qui ne nécessitent pas une mise à jour, une montée de version ou un remplacement immédiat par l’entité utilisatrice, comme la configuration d’un filtre de pare-feu..",
+                            "value": "L"
+                        },
+                        "Moderé (M)": {
+                            "tooltip": "Les actions requises pour répondre à une vulnérabilité demandent un certain effort de la part de l’utilisateur et peuvent entraîner un impact minimal sur le service lors de leur mise en œuvre. Parmi les exemples, on trouve : une mise à jour simple à distance, la désactivation d’un sous-système, ou une mise à niveau logicielle à faible intervention, comme une mise à jour de pilote.",
+                            "value": "M"
+                        },
+                        "Haut (H)": {
+                            "tooltip": "Les actions requises pour répondre à une vulnérabilité sont importantes et/ou difficiles, et peuvent entraîner un impact étendu et planifié sur le service. Cela doit être pris en compte pour la planification, notamment en respectant tout embargo sur le déploiement de la réponse sélectionnée. Alternativement, la réponse à la vulnérabilité sur le terrain n’est pas possible à distance. La seule solution consiste en un remplacement physique (par exemple, les unités déployées doivent être rappelées pour une réparation ou un remplacement en atelier). Parmi les exemples, on trouve : une mise à jour de pilote à privilèges élevés, des mises à jour de microcode ou du BIOS UEFI, ou des mises à niveau logicielles nécessitant une analyse approfondie et une compréhension des impacts potentiels sur l’infrastructure avant leur mise en œuvre. Une mise à jour du BIOS UEFI affectant l’attestation du module de plateforme sécurisée (TPM) sans impacter le logiciel de chiffrement des disques tel que BitLocker en est un bon exemple récent. Les pannes irréparables telles que des sous-systèmes flash non amorçables, des disques ou SSD défaillants, des modules mémoire défectueux, des dispositifs réseau ou d’autres matériels non réparables sous garantie doivent également être considérés comme nécessitant un effort élevé.",
+                            "value": "H"
+                        }
+                    },
+                    "selected": "X"
+                },
+                "Urgence Fournisseur (U)": {
+                    "tooltip": "Pour faciliter une méthode standardisée d’intégration d’évaluations supplémentaires fournies par le fournisseur, une métrique supplémentaire optionnelle appelée « Urgence Fournisseur » est disponible. Note : Bien que tout fournisseur d’évaluation au sein de la chaîne d’approvisionnement puisse attribuer une note d’Urgence Fournisseur, le Fournisseur de Produit Avant-Dernier (PPP) est le mieux placé pour fournir une évaluation directe de cette urgence.",
+                    "short": "U",
+                    "options": {
+                        "Non défini (X)": {
+                            "tooltip": "La métrique n’a pas été évaluée.",
+                            "value": "X"
+                        },
+                        "Informationnel": {
+                            "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme n’ayant aucune urgence (Informationnel).",
+                            "value": "Clear"
+                        },
+                        "Vert": {
+                            "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme ayant une urgence réduite.",
+                            "value": "Green"
+                        },
+                        "Ambre": {
+                            "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme ayant une urgence modérée.",
+                            "value": "Amber"
+                        },
+                        "Rouge": {
+                            "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme ayant la plus haute urgence.",
+                            "value": "Red"
+                        }
+                    },
+                    "selected": "X"
+                }
+            }
+        }
     }
-  },
-  "Métriques de menace": {
-    "fill": "consumer",
-    "metric_groups": {
-      "Métriques de menace": {
-        "Maturité de l’exploitation (E)": {
-          "tooltip": "Cette métrique indique le niveau de maturité des techniques ou du code d'exploitation disponibles pour la vulnérabilité. Elle peut évoluer dans le temps.",
-          "short": "E",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "Aucune évaluation spécifique de la maturité de l’exploitation n’est fournie.",
-              "value": "X"
-            },
-            "Attaquée (A)": {
-              "tooltip": "La vulnérabilité est exploitée activement ou l’exploitation est confirmée.",
-              "value": "A"
-            },
-            "Preuve de concept (P)": {
-              "tooltip": "Un code ou une preuve de concept fonctionnelle est disponible.",
-              "value": "P"
-            },
-            "Non prouvée (U)": {
-              "tooltip": "Aucun code d’exploitation fonctionnel n’est disponible ou la maturité de l’exploitation est inconnue.",
-              "value": "U"
-            }
-          },
-          "selected": "X"
-        }
-      }
-    }
-  },
-  "Environnemental (Contexte de l’environnement)": {
-    "fill": "consumer",
-    "metric_groups": {
-      "Exigences de sécurité": {
-        "Confidentialité (CR)": {
-          "tooltip": "Importance de la confidentialité du système vulnérable dans l’environnement de l’organisation.",
-          "short": "CR",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "Aucune exigence spécifique n’est définie.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Confidentialité particulièrement importante pour cet actif.",
-              "value": "H"
-            },
-            "Moyen (M)": {
-              "tooltip": "Confidentialité d’importance intermédiaire pour cet actif.",
-              "value": "M"
-            },
-            "Bas (L)": {
-              "tooltip": "Confidentialité relativement peu importante pour cet actif.",
-              "value": "L"
-            }
-          },
-          "selected": "X"
-        },
-        "Intégrité (IR)": {
-          "tooltip": "Importance de l'intégrité du système vulnérable dans l’environnement de l’organisation.",
-          "short": "IR",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "Aucune exigence spécifique n’est définie.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Intégrité particulièrement importante pour cet actif.",
-              "value": "H"
-            },
-            "Moyen (M)": {
-              "tooltip": "Intégrité d’importance intermédiaire pour cet actif.",
-              "value": "M"
-            },
-            "Bas (L)": {
-              "tooltip": "Intégrité relativement peu importante pour cet actif.",
-              "value": "L"
-            }
-          },
-          "selected": "X"
-        },
-        "Disponibilité (AR)": {
-          "tooltip": "Importance de la disponibilité du système vulnérable dans l’environnement de l’organisation.",
-          "short": "AR",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "Aucune exigence spécifique n’est définie.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Disponibilité particulièrement importante pour cet actif.",
-              "value": "H"
-            },
-            "Moyen (M)": {
-              "tooltip": "Disponibilité d’importance intermédiaire pour cet actif.",
-              "value": "M"
-            },
-            "Bas (L)": {
-              "tooltip": "Disponibilité relativement peu importante pour cet actif.",
-              "value": "L"
-            }
-          },
-          "selected": "X"
-        }
-      },
-      "Métriques d’exploitabilité": {
-        "Vecteur d'Attaque (MAV)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique reflète le contexte dans lequel l’exploitation de la vulnérabilité est possible. La valeur de cette métrique (et par conséquent la gravité résultante) sera plus élevée plus l’attaquant peut être distant (logiquement et physiquement) pour exploiter le système vulnérable. L’hypothèse est que le nombre d’attaquants potentiels pour une vulnérabilité exploitable à distance via un réseau est supérieur au nombre d’attaquants potentiels pouvant exploiter une vulnérabilité nécessitant un accès physique à un appareil, justifiant ainsi une gravité plus importante.",
-          "short": "MAV",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Réseau (N)": {
-              "tooltip": "La valeur de cette métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "N"
-            },
-            "Adjacent (A)": {
-              "tooltip": "La valeur de cette métrique a la même définition que celle de la métrique de base définie ci-dessus.",
-              "value": "A"
-            },
-            "Local (L)": {
-              "tooltip": "La valeur de cette métrique a la même définition que celle de la métrique de base définie ci-dessus.",
-              "value": "L"
-            },
-            "Physique (P)": {
-              "tooltip": "La valeur de cette métrique a la même définition que celle de la métrique de base définie ci-dessus.",
-              "value": "P"
-            }
-          },
-          "selected": "X"
-        },
-        "Complexité de l'Attaque(MAC)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique capture les actions mesurables que l’attaquant doit accomplir pour contourner ou échapper activement aux conditions intégrées de sécurité afin d’obtenir un exploit fonctionnel. Ce sont des conditions dont le but principal est d’augmenter la sécurité et/ou la complexité de l’ingénierie des exploits. Une vulnérabilité exploitable sans variable spécifique à la cible a une complexité inférieure à une vulnérabilité nécessitant une personnalisation non triviale. Cette métrique vise à refléter les mécanismes de sécurité utilisés par le système vulnérable.",
-          "short": "MAC",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Bas (L)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "L"
-            },
-            "Haut (H)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "H"
-            }
-          },
-          "selected": "X"
-        },
-        "Prérequis de l'Attaque (MAT)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique capture les conditions préalables de déploiement et d’exécution ou variables du système vulnérable qui permettent l’attaque. Elles diffèrent des techniques/technologies améliorant la sécurité (cf. Attack Complexity) car le but principal de ces conditions n’est pas d’atténuer explicitement les attaques, mais elles émergent naturellement comme conséquence du déploiement et de l’exécution du système vulnérable.",
-          "short": "MAT",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Aucun (N)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "N"
-            },
-            "Présent (P)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "P"
-            }
-          },
-          "selected": "X"
-        },
-        "Privilèges Requis (MPR)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique décrit le niveau de privilèges que l’attaquant doit posséder avant d’exploiter avec succès la vulnérabilité. La méthode par laquelle l’attaquant obtient ces privilèges (ex. comptes d’essai gratuits) est hors du cadre de cette métrique. En général, les comptes auto-provisionnés ne constituent pas une exigence de privilège si l’attaquant peut s’octroyer des privilèges dans le cadre de l’attaque.",
-          "short": "MPR",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Aucun (N)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "N"
-            },
-            "Bas (L)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "L"
-            },
-            "Haut (H)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "H"
-            }
-          },
-          "selected": "X"
-        },
-        "Interaction Utilisateur (MUI)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique capture la nécessité d’une interaction humaine, autre que l’attaquant, pour réussir la compromission du système vulnérable. Elle détermine si la vulnérabilité peut être exploitée uniquement à la volonté de l’attaquant, ou si un autre utilisateur (ou processus initié par un utilisateur) doit participer d’une manière ou d’une autre.",
-          "short": "MUI",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Aucune (N)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "N"
-            },
-            "Passive (P)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "P"
-            },
-            "Active (A)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "A"
-            }
-          },
-          "selected": "X"
-        }
-      },
-      "Métriques d’impact sur le système vulnérable": {
-        "Confidentialité (MVC)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique mesure l’impact sur la confidentialité des informations gérées par le SYSTÈME VULNÉRABLE dû à une vulnérabilité exploitée avec succès. La confidentialité désigne la limitation de l’accès et de la divulgation de l’information aux seuls utilisateurs autorisés, ainsi que la prévention d’accès ou de divulgation aux personnes non autorisées.",
-          "short": "MVC",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "N"
-            }
-          },
-          "selected": "X"
-        },
-        "Intégrité (MVI)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique mesure l’impact sur l’intégrité d’une vulnérabilité exploitée avec succès. L’intégrité se réfère à la fiabilité et la véracité de l’information. L’intégrité du SYSTÈME VULNÉRABLE est impactée lorsqu’un attaquant modifie de manière non autorisée les données système. L’intégrité est également impactée lorsqu’un utilisateur système peut contester des actions critiques réalisées dans le contexte du système (ex. manque de journalisation suffisante).",
-          "short": "MVI",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "N"
-            }
-          },
-          "selected": "X"
-        },
-        "Disponibilité (MVA)": {
-          "tooltip": "Ces métriques permettent à l’analyste utilisateur de remplacer les valeurs individuelles des métriques de base en fonction des caractéristiques spécifiques de l’environnement de l’utilisateur. Cette métrique mesure l’impact sur la disponibilité du SYSTÈME VULNÉRABLE résultant d’une vulnérabilité exploitée avec succès. Alors que les métriques d’impact Confidentialité et Intégrité concernent la perte de confidentialité ou d’intégrité des données (ex. informations, fichiers) utilisées par le système, cette métrique concerne la perte de disponibilité du système lui-même, comme un service réseau (ex. web, base de données, email). La disponibilité se réfère à l’accessibilité des ressources informationnelles ; les attaques consommant la bande passante réseau, par exemple, affectent la disponibilité.",
-          "short": "MVA",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Cette valeur métrique a la même définition que la valeur de la métrique de base définie ci-dessus.",
-              "value": "N"
-            }
-          },
-          "selected": "X"
-        }
-      },
-      "Métriques d’impact sur les systèmes subséquents": {
-        "Confidentialité (MSC)": {
-          "tooltip": "Impact environnemental modifié sur la confidentialité des systèmes subséquents.",
-          "short": "MSC",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "Utilise la valeur de base SC.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Impact important ou complet sur la confidentialité des systèmes subséquents.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Impact limité sur la confidentialité des systèmes subséquents.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Aucun impact sur la confidentialité des systèmes subséquents.",
-              "value": "N"
-            }
-          },
-          "selected": "X"
-        },
-        "Intégrité (MSI)": {
-          "tooltip": "Impact environnemental modifié sur la intégrité des systèmes subséquents.",
-          "short": "MSI",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "Utilise la valeur de base SI.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Impact important ou complet sur la intégrité des systèmes subséquents.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Impact limité sur la intégrité des systèmes subséquents.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Aucun impact sur la intégrité des systèmes subséquents.",
-              "value": "N"
-            },
-            "Présent (S)": {
-              "tooltip": "Impact présent sur les systèmes subséquents, avec les conditions particulières définies par CVSS.",
-              "value": "S"
-            }
-          },
-          "selected": "X"
-        },
-        "Disponibilité (MSA)": {
-          "tooltip": "Impact environnemental modifié sur la disponibilité des systèmes subséquents.",
-          "short": "MSA",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "Utilise la valeur de base SA.",
-              "value": "X"
-            },
-            "Haut (H)": {
-              "tooltip": "Impact important ou complet sur la disponibilité des systèmes subséquents.",
-              "value": "H"
-            },
-            "Bas (L)": {
-              "tooltip": "Impact limité sur la disponibilité des systèmes subséquents.",
-              "value": "L"
-            },
-            "Aucun (N)": {
-              "tooltip": "Aucun impact sur la disponibilité des systèmes subséquents.",
-              "value": "N"
-            },
-            "Présent (S)": {
-              "tooltip": "Impact présent sur les systèmes subséquents, avec les conditions particulières définies par CVSS.",
-              "value": "S"
-            }
-          },
-          "selected": "X"
-        }
-      }
-    }
-  },
-  "Métriques Supplémentaires": {
-    "fill": "supplier",
-    "metric_groups": {
-      "": {
-        "Sécurité (S)": {
-          "tooltip": "Lorsqu’un système a une utilisation prévue ou une adéquation à une finalité liée à la sécurité, il est possible que l’exploitation d’une vulnérabilité dans ce système ait un impact sur la Sécurité (Safety), qui peut être représenté dans le groupe des métriques supplémentaires. L’absence de valeur pour la métrique de Sécurité ne signifie PAS qu’il n’y ait pas d’impact lié à la sécurité.",
-          "short": "S",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Négligeable (N)": {
-              "tooltip": "Les conséquences de la vulnérabilité correspondent à la catégorie de conséquences « négligeables » définie par la norme IEC 61508.",
-              "value": "N"
-            },
-            "Présent (P)": {
-              "tooltip": "Les conséquences de la vulnérabilité correspondent à la définition des catégories de conséquences « marginales », « critiques » ou « catastrophiques » de la norme IEC 61508.",
-              "value": "P"
-            }
-          },
-          "selected": "X"
-        },
-        "Automatisable (AU)": {
-          "tooltip": "La métrique « Automatisable » répond à la question : « Un attaquant peut-il automatiser l’exploitation de cette vulnérabilité sur plusieurs cibles ? », en se basant sur les étapes 1 à 4 de la kill chain [Hutchins et al., 2011]. Ces étapes sont la reconnaissance, l’armement, la livraison et l’exploitation.",
-          "short": "AU",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Non (N)": {
-              "tooltip": "Les attaquants ne peuvent pas automatiser de manière fiable les 4 étapes de la kill chain pour cette vulnérabilité pour une raison quelconque. Ces étapes sont la reconnaissance, l’armement, la livraison et l’exploitation.",
-              "value": "N"
-            },
-            "Oui (Y)": {
-              "tooltip": "Les attaquants peuvent automatiser de manière fiable les 4 étapes de la kill chain. Ces étapes sont la reconnaissance, l’armement, la livraison et l’exploitation (par exemple, la vulnérabilité est « propagable comme un ver »).",
-              "value": "Y"
-            }
-          },
-          "selected": "X"
-        },
-        "Récupération (R)": {
-          "tooltip": "La récupération décrit la résilience d’un système à rétablir les services, en termes de performance et de disponibilité, après qu’une attaque a été effectuée.",
-          "short": "R",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Automatique (A)": {
-              "tooltip": "Le système rétablit automatiquement les services après qu’une attaque a été effectuée.",
-              "value": "A"
-            },
-            "Utilisateur (U)": {
-              "tooltip": "Le système nécessite une intervention manuelle de l’utilisateur pour rétablir les services après qu’une attaque a été effectuée.",
-              "value": "U"
-            },
-            "Irrécupérable (I)": {
-              "tooltip": "Les services du système sont irrécupérables par l’utilisateur après qu’une attaque a été effectuée.",
-              "value": "I"
-            }
-          },
-          "selected": "X"
-        },
-        "Densité de Valeur (V)": {
-          "tooltip": "La Densité de Valeur décrit les ressources sur lesquelles l’attaquant prendra le contrôle lors d’un seul événement d’exploitation.",
-          "short": "V",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Diffuse (D)": {
-              "tooltip": "Le système vulnérable dispose de ressources limitées. Autrement dit, les ressources sur lesquelles l’attaquant prendra le contrôle lors d’un seul événement d’exploitation sont relativement faibles. Un exemple de Densité de Valeur Diffuse (c’est-à-dire limitée) serait une attaque exploitant une vulnérabilité d’un seul client de messagerie.",
-              "value": "D"
-            },
-            "Concentrée (C)": {
-              "tooltip": "Le système vulnérable est riche en ressources. De manière heuristique, ces systèmes relèvent souvent directement de la responsabilité des « opérateurs système » plutôt que des utilisateurs. Un exemple de Densité de Valeur Concentrée (c’est-à-dire étendue) serait une attaque contre un serveur de messagerie central.",
-              "value": "C"
-            }
-          },
-          "selected": "X"
-        },
-        "Effort de Réponse à la Vulnérabilité (RE)": {
-          "tooltip": "L’objectif de la métrique d’Effort de Réponse à la Vulnérabilité est de fournir des informations complémentaires sur la difficulté pour les utilisateurs de fournir une réponse initiale à l’impact des vulnérabilités sur les produits et services déployés dans leur infrastructure. L’utilisateur peut ainsi prendre en compte cette information supplémentaire sur l’effort requis lors de la mise en place de mesures d’atténuation et/ou de la planification de la remédiation.",
-          "short": "RE",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Bas (L)": {
-              "tooltip": "L’effort requis pour répondre à une vulnérabilité est faible ou trivial. Parmi les exemples, on trouve : la communication d’une meilleure documentation, des contournements de configuration, ou des conseils du fournisseur qui ne nécessitent pas une mise à jour, une montée de version ou un remplacement immédiat par l’entité utilisatrice, comme la configuration d’un filtre de pare-feu..",
-              "value": "L"
-            },
-            "Moderé (M)": {
-              "tooltip": "Les actions requises pour répondre à une vulnérabilité demandent un certain effort de la part de l’utilisateur et peuvent entraîner un impact minimal sur le service lors de leur mise en œuvre. Parmi les exemples, on trouve : une mise à jour simple à distance, la désactivation d’un sous-système, ou une mise à niveau logicielle à faible intervention, comme une mise à jour de pilote.",
-              "value": "M"
-            },
-            "Haut (H)": {
-              "tooltip": "Les actions requises pour répondre à une vulnérabilité sont importantes et/ou difficiles, et peuvent entraîner un impact étendu et planifié sur le service. Cela doit être pris en compte pour la planification, notamment en respectant tout embargo sur le déploiement de la réponse sélectionnée. Alternativement, la réponse à la vulnérabilité sur le terrain n’est pas possible à distance. La seule solution consiste en un remplacement physique (par exemple, les unités déployées doivent être rappelées pour une réparation ou un remplacement en atelier). Parmi les exemples, on trouve : une mise à jour de pilote à privilèges élevés, des mises à jour de microcode ou du BIOS UEFI, ou des mises à niveau logicielles nécessitant une analyse approfondie et une compréhension des impacts potentiels sur l’infrastructure avant leur mise en œuvre. Une mise à jour du BIOS UEFI affectant l’attestation du module de plateforme sécurisée (TPM) sans impacter le logiciel de chiffrement des disques tel que BitLocker en est un bon exemple récent. Les pannes irréparables telles que des sous-systèmes flash non amorçables, des disques ou SSD défaillants, des modules mémoire défectueux, des dispositifs réseau ou d’autres matériels non réparables sous garantie doivent également être considérés comme nécessitant un effort élevé.",
-              "value": "H"
-            }
-          },
-          "selected": "X"
-        },
-        "Urgence Fournisseur (U)": {
-          "tooltip": "Pour faciliter une méthode standardisée d’intégration d’évaluations supplémentaires fournies par le fournisseur, une métrique supplémentaire optionnelle appelée « Urgence Fournisseur » est disponible. Note : Bien que tout fournisseur d’évaluation au sein de la chaîne d’approvisionnement puisse attribuer une note d’Urgence Fournisseur, le Fournisseur de Produit Avant-Dernier (PPP) est le mieux placé pour fournir une évaluation directe de cette urgence.",
-          "short": "U",
-          "options": {
-            "Non défini (X)": {
-              "tooltip": "La métrique n’a pas été évaluée.",
-              "value": "X"
-            },
-            "Informationnel": {
-              "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme n’ayant aucune urgence (Informationnel).",
-              "value": "Clear"
-            },
-            "Vert": {
-              "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme ayant une urgence réduite.",
-              "value": "Green"
-            },
-            "Ambre": {
-              "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme ayant une urgence modérée.",
-              "value": "Amber"
-            },
-            "Rouge": {
-              "tooltip": "Le fournisseur a évalué l’impact de cette vulnérabilité comme ayant la plus haute urgence.",
-              "value": "Red"
-            }
-          },
-          "selected": "X"
-        }
-      }
-    }
-  }
 }

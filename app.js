@@ -1,98 +1,229 @@
 // Copyright FIRST, Red Hat, and contributors
 // SPDX-License-Identifier: BSD-2-Clause
 
-const REPORT_STORAGE_KEY = "cvss-v4-report-french";
 const JUSTIFICATIONS_STORAGE_KEY = "cvss-v4-justifications-french";
 
 const app = Vue.createApp({
     data() {
         return {
             cvssConfigData: null,
-            currentView: "calculator",
-            macroVector: null,
             vectorInstance: new Vector(),
             cvssInstance: null,
             notice: "",
             noticeTimer: null,
-            justifications: {},
-            report: this.defaultReport()
+            justifications: {}
         };
     },
-    methods: {
-        defaultReport() {
-            return {
-                title: "",
-                reference: "",
-                target: "",
-                date: new Date().toISOString().slice(0, 10),
-                author: "",
-                description: "",
-                impactConfidentiality: "",
-                impactIntegrity: "",
-                impactAvailability: "",
-                evidence: "",
-                remediation: "",
-                references: ""
-            };
-        },
 
+    methods: {
         async loadConfigData() {
             try {
                 const response = await fetch("./metrics.json", { cache: "no-store" });
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
+
                 this.cvssConfigData = await response.json();
-                this.loadLocalData();
-                this.resetSelected();
+                this.loadJustifications();
                 this.updateCVSSInstance();
             } catch (error) {
-                console.error("Failed to load configuration data:", error);
+                console.error("Impossible de charger la configuration CVSS :", error);
                 this.showNotice("Impossible de charger la configuration CVSS.");
             }
         },
 
-        fillDescription(fill) {
-            if (fill === "consumer") {
-                return "À renseigner selon l'environnement réel. Le client peut fournir les informations nécessaires sur l'architecture, les contrôles et la criticité de l'actif.";
+        groupDescription(groupName, sectionName) {
+            const descriptions = {
+                "Métriques d’exploitabilité": "Décrivent les conditions nécessaires pour exploiter la vulnérabilité.",
+                "Métriques d’impact sur le système vulnérable": "Décrivent les conséquences directes de l'exploitation sur le système vulnérable.",
+                "Métriques d’impact sur les systèmes subséquents": "Décrivent les conséquences sur d'autres systèmes ou composants affectés après l'exploitation.",
+                "Métriques de menace": "Décrivent l'état actuel de la menace, notamment la maturité de l'exploitation.",
+                "Exigences de sécurité": "Indiquent l'importance relative de la confidentialité, de l'intégrité et de la disponibilité dans cet environnement.",
+                "Métriques Supplémentaires": "Ajoutent du contexte à l'évaluation sans modifier directement le score numérique."
+            };
+
+            if (descriptions[groupName]) {
+                return descriptions[groupName];
             }
-            return "Métriques utilisées pour l'évaluation intrinsèque de la vulnérabilité.";
+
+            if (sectionName === "Environnemental (Contexte de l’environnement)") {
+                return "Ces métriques permettent d'adapter l'évaluation à un environnement particulier.";
+            }
+
+            return "";
+        },
+
+        sectionDescription(sectionName, fill) {
+            if (sectionName === "Métriques de Base") {
+                return "Caractéristiques intrinsèques de la vulnérabilité, indépendantes d'un environnement particulier.";
+            }
+
+            if (sectionName === "Métriques de menace") {
+                return "Informations susceptibles d'évoluer dans le temps, notamment selon les éléments connus sur l'exploitation.";
+            }
+
+            if (sectionName === "Environnemental (Contexte de l’environnement)") {
+                return "Adapte l'évaluation à un environnement précis, à ses contrôles et à ses exigences de sécurité. Ces métriques sont facultatives.";
+            }
+
+            if (sectionName === "Métriques Supplémentaires") {
+                return "Informations complémentaires destinées à apporter du contexte. Elles ne modifient pas directement le score CVSS.";
+            }
+
+            return fill === "consumer" ? "Informations propres à l'environnement évalué." : "";
+        },
+
+        displayGroupName(groupName, sectionName) {
+            if (sectionName === "Environnemental (Contexte de l’environnement)") {
+                const modified = {
+                    "Métriques d’exploitabilité": "Métriques d’exploitabilité modifiées",
+                    "Métriques d’impact sur le système vulnérable": "Métriques d’impact sur le système vulnérable modifiées",
+                    "Métriques d’impact sur les systèmes subséquents": "Métriques d’impact sur les systèmes subséquents modifiées"
+                };
+                return modified[groupName] || groupName;
+            }
+            return groupName;
+        },
+
+        sectionMetricCount(metricTypeData) {
+            return Object.values(metricTypeData.metric_groups || {}).reduce((total, group) => total + Object.keys(group).length, 0);
+        },
+
+        sectionClass(sectionName) {
+            const classes = {
+                "Métriques de Base": "section-base",
+                "Métriques de menace": "section-threat",
+                "Environnemental (Contexte de l’environnement)": "section-environmental",
+                "Métriques Supplémentaires": "section-supplemental"
+            };
+            return classes[sectionName] || "";
+        },
+
+        groupClass(groupName) {
+            const classes = {
+                "Métriques d’exploitabilité": "group-exploitability",
+                "Métriques d’impact sur le système vulnérable": "group-vulnerable-impact",
+                "Métriques d’impact sur les systèmes subséquents": "group-subsequent-impact",
+                "Métriques de menace": "group-threat",
+                "Exigences de sécurité": "group-requirements"
+            };
+            return classes[groupName] || "group-default";
         },
 
         optionClass(value) {
-            const optionClasses = {
-                H: "option-high",
-                L: "option-low",
-                N: "option-none",
-                P: "option-present",
-                A: "option-active",
-                X: "option-undefined"
+            const classes = {
+                X: "value-undefined",
+                N: "value-none",
+                L: "value-low",
+                M: "value-medium",
+                H: "value-high",
+                P: "value-present",
+                A: "value-active",
+                S: "value-special",
+                C: "value-context",
+                D: "value-context",
+                Y: "value-yes",
+                U: "value-unproven",
+                I: "value-inconclusive",
+                Clear: "value-clear",
+                Green: "value-green",
+                Amber: "value-amber",
+                Red: "value-red"
             };
-            return optionClasses[value] || "";
-        },
-
-        getSeverityClass(severityRating) {
-            const severityClasses = {
-                Bas: "severity-low",
-                Moyen: "severity-medium",
-                Haut: "severity-high",
-                Critique: "severity-critical",
-                Aucun: "severity-none"
-            };
-            return severityClasses[severityRating] || "severity-none";
+            return classes[value] || "value-default";
         },
 
         selectedOption(metricData) {
             const value = this.vectorInstance.metrics[metricData.short];
             const entry = Object.entries(metricData.options).find(([, optionData]) => optionData.value === value);
+
             if (!entry) {
-                return { value: "X", label: "Non défini", description: "La métrique n'est pas définie." };
+                return {
+                    value: "X",
+                    label: "Non défini",
+                    description: "La métrique n'est pas définie."
+                };
             }
+
             return {
                 value: entry[1].value,
                 label: entry[0],
                 description: entry[1].tooltip || "Aucune description disponible."
             };
+        },
+
+        joinFrench(items) {
+            if (!items || items.length === 0) return "";
+            if (items.length === 1) return items[0];
+            if (items.length === 2) return `${items[0]} et ${items[1]}`;
+            return `${items.slice(0, -1).join(", ")} et ${items[items.length - 1]}`;
+        },
+
+        onButton(metric, value) {
+            this.vectorInstance.updateMetric(metric, value);
+            this.updateCVSSInstance();
+            window.location.hash = this.vector;
+        },
+
+        loadVector(vector) {
+            const value = String(vector || "").trim();
+            if (!value) {
+                this.resetSelected();
+                window.location.hash = "";
+                return;
+            }
+
+            try {
+                const nextVector = new Vector(value);
+                this.vectorInstance = nextVector;
+                this.updateCVSSInstance();
+                window.location.hash = this.vector;
+                this.showNotice("Vecteur CVSS chargé.");
+            } catch (error) {
+                console.error("Vecteur CVSS invalide :", error);
+                this.showNotice("Le vecteur CVSS fourni n'est pas valide.");
+            }
+        },
+
+        setButtonsToVector(vector) {
+            if (!vector) {
+                this.resetSelected();
+                this.updateCVSSInstance();
+                return;
+            }
+
+            try {
+                this.vectorInstance = new Vector(vector);
+                this.updateCVSSInstance();
+            } catch (error) {
+                console.error("Erreur lors du chargement du vecteur :", error);
+                this.showNotice("Le vecteur présent dans l'URL n'est pas valide.");
+                window.location.hash = "";
+                this.resetSelected();
+                this.updateCVSSInstance();
+            }
+        },
+
+        updateCVSSInstance() {
+            try {
+                this.cvssInstance = new CVSS40(this.vectorInstance);
+            } catch (error) {
+                console.error("Erreur de calcul CVSS :", error);
+                this.cvssInstance = null;
+            }
+        },
+
+        resetSelected() {
+            this.vectorInstance = new Vector();
+        },
+
+        resetAll() {
+            this.resetSelected();
+            this.justifications = {};
+            this.updateCVSSInstance();
+            window.location.hash = "";
+            this.saveJustifications();
+            this.showNotice("Évaluation réinitialisée.");
         },
 
         copyText(text, successMessage) {
@@ -117,59 +248,24 @@ const app = Vue.createApp({
 
         copyVector() {
             this.copyText(this.vector, "Vecteur CVSS copié dans le presse-papiers.");
-            window.location.hash = this.vector;
         },
 
-        joinFrench(items) {
-            if (!items || items.length === 0) return "";
-            if (items.length === 1) return items[0];
-            if (items.length === 2) return `${items[0]} et ${items[1]}`;
-            return `${items.slice(0, -1).join(", ")} et ${items[items.length - 1]}`;
-        },
-
-        onButton(metric, value) {
-            this.vectorInstance.updateMetric(metric, value);
-            window.location.hash = this.vector;
-            this.updateCVSSInstance();
-        },
-
-        setButtonsToVector(vector) {
-            if (!vector) {
-                this.updateCVSSInstance();
-                return;
-            }
+        loadJustifications() {
             try {
-                this.vectorInstance.updateMetricsFromVectorString(vector);
-                this.updateCVSSInstance();
+                const stored = localStorage.getItem(JUSTIFICATIONS_STORAGE_KEY);
+                this.justifications = stored ? JSON.parse(stored) : {};
             } catch (error) {
-                console.error("Error updating vector:", error.message);
-                this.showNotice("Le vecteur présent dans l'URL n'est pas valide.");
+                console.warn("Impossible de charger les justifications locales :", error);
+                this.justifications = {};
             }
         },
 
-        updateCVSSInstance() {
-            this.cvssInstance = new CVSS40(this.vectorInstance);
-            this.macroVector = this.vectorInstance.equivalentClasses;
-        },
-
-        resetSelected() {
-            this.vectorInstance = new Vector();
-        },
-
-        resetAll() {
-            this.resetSelected();
-            this.justifications = {};
-            this.report = this.defaultReport();
-            this.updateCVSSInstance();
-            window.location.hash = "";
-            this.saveJustifications();
-            this.saveReport();
-            this.showNotice("Calcul et rapport réinitialisés.");
-        },
-
-        setView(view) {
-            this.currentView = view;
-            window.scrollTo({ top: 0, behavior: "smooth" });
+        saveJustifications() {
+            try {
+                localStorage.setItem(JUSTIFICATIONS_STORAGE_KEY, JSON.stringify(this.justifications));
+            } catch (error) {
+                console.warn("Impossible de sauvegarder les justifications :", error);
+            }
         },
 
         showNotice(message) {
@@ -180,204 +276,116 @@ const app = Vue.createApp({
             }, 3000);
         },
 
-        loadLocalData() {
-            try {
-                const storedJustifications = localStorage.getItem(JUSTIFICATIONS_STORAGE_KEY);
-                if (storedJustifications) {
-                    this.justifications = JSON.parse(storedJustifications);
-                }
-
-                const storedReport = localStorage.getItem(REPORT_STORAGE_KEY);
-                if (storedReport) {
-                    this.report = { ...this.defaultReport(), ...JSON.parse(storedReport) };
-                }
-            } catch (error) {
-                console.warn("Unable to load local data:", error);
+        scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "start" });
             }
         },
 
-        saveJustifications() {
-            try {
-                localStorage.setItem(JUSTIFICATIONS_STORAGE_KEY, JSON.stringify(this.justifications));
-            } catch (error) {
-                console.warn("Unable to save justifications:", error);
-            }
-        },
-
-        saveReport() {
-            try {
-                localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(this.report));
-            } catch (error) {
-                console.warn("Unable to save report:", error);
-            }
-        },
-
-        printReport() {
-            this.currentView = "report";
-            this.$nextTick(() => window.print());
-        },
-
-        copyMarkdown() {
-            this.copyText(this.markdownReport, "Rapport Markdown copié dans le presse-papiers.");
-        },
-
-        formatDate(date) {
-            if (!date) return "";
-            const parsed = new Date(`${date}T00:00:00`);
-            return new Intl.DateTimeFormat("fr-FR").format(parsed);
-        },
-
-        valueLabel(metricData) {
-            return this.selectedOption(metricData).label;
-        },
-
+        severityClass() {
+            const classes = {
+                Bas: "severity-low",
+                Moyen: "severity-medium",
+                Haut: "severity-high",
+                Critique: "severity-critical",
+                Aucun: "severity-none"
+            };
+            return classes[this.severityRating] || "severity-none";
+        }
     },
+
     computed: {
         vector() {
             return this.vectorInstance.raw;
         },
 
-        cvssCalculation() {
-            if (!this.vectorInstance) return null;
-            try {
-                return new CVSS40(this.vectorInstance);
-            } catch (error) {
-                console.error("Unable to calculate CVSS score:", error);
-                return null;
-            }
-        },
-
         score() {
-            return this.cvssCalculation ? this.cvssCalculation.score : 0;
+            return this.cvssInstance ? this.cvssInstance.score : 0;
         },
 
         severityRating() {
-            return this.cvssCalculation ? this.cvssCalculation.severity : "Aucun";
+            return this.cvssInstance ? this.cvssInstance.severity : "Aucun";
         },
-        scoreNomenclature() {
-            const metrics = this.vectorInstance?.metrics || {};
-            const hasThreat = metrics.E && metrics.E !== "X";
-            const environmentalKeys = ["CR", "IR", "AR", "MAV", "MAC", "MAT", "MPR", "MUI", "MVC", "MVI", "MVA", "MSC", "MSI", "MSA"];
-            const hasEnvironmental = environmentalKeys.some(key => metrics[key] && metrics[key] !== "X");
-            if (hasThreat && hasEnvironmental) return "CVSS-BTE";
-            if (hasThreat) return "CVSS-BT";
-            if (hasEnvironmental) return "CVSS-BE";
-            return "CVSS-B";
+
+        nomenclature() {
+            return this.vectorInstance ? this.vectorInstance.nomenclature : "CVSS-B";
+        },
+
+        definedMetricCount() {
+            return Object.values(this.vectorInstance.metrics).filter(value => value !== "X").length;
         },
 
         generatedSummary() {
-            if (!this.cvssCalculation || !this.cvssConfigData) {
-                return "Sélectionnez les métriques pour générer une synthèse.";
+            if (!this.cvssInstance) {
+                return "Le score n'est pas disponible.";
             }
 
             const metrics = this.vectorInstance.metrics;
             const parts = [];
+            const access = {
+                N: "à distance via le réseau",
+                A: "depuis un réseau adjacent",
+                L: "localement",
+                P: "avec un accès physique"
+            };
 
-            const access = [];
-            if (metrics.AV === "N") access.push("à distance via le réseau");
-            if (metrics.AV === "A") access.push("depuis un réseau adjacent");
-            if (metrics.AV === "L") access.push("localement");
-            if (metrics.AV === "P") access.push("avec un accès physique");
+            if (access[metrics.AV]) {
+                parts.push(`exploitable ${access[metrics.AV]}`);
+            }
 
-            if (access.length) parts.push(`Cette vulnérabilité est exploitable ${access[0]}`);
+            const privileges = {
+                N: "sans privilèges préalables",
+                L: "avec de faibles privilèges",
+                H: "avec des privilèges élevés"
+            };
+            if (privileges[metrics.PR]) {
+                parts.push(privileges[metrics.PR]);
+            }
 
-            if (metrics.PR === "N") parts.push("sans privilèges préalables");
-            if (metrics.PR === "L") parts.push("avec de faibles privilèges");
-            if (metrics.PR === "H") parts.push("avec des privilèges élevés");
-
-            if (metrics.UI === "N") parts.push("sans interaction utilisateur");
-            if (metrics.UI === "P") parts.push("avec une interaction utilisateur passive");
-            if (metrics.UI === "A") parts.push("avec une interaction utilisateur active");
+            const interaction = {
+                N: "sans interaction utilisateur",
+                P: "avec une interaction utilisateur passive",
+                A: "avec une interaction utilisateur active"
+            };
+            if (interaction[metrics.UI]) {
+                parts.push(interaction[metrics.UI]);
+            }
 
             const impacts = [];
-            if (["H", "L"].includes(metrics.VC)) impacts.push(`un impact ${metrics.VC === "H" ? "élevé" : "faible"} sur la confidentialité`);
-            if (["H", "L"].includes(metrics.VI)) impacts.push(`un impact ${metrics.VI === "H" ? "élevé" : "faible"} sur l'intégrité`);
-            if (["H", "L"].includes(metrics.VA)) impacts.push(`un impact ${metrics.VA === "H" ? "élevé" : "faible"} sur la disponibilité`);
+            const impactLabels = [
+                ["VC", "confidentialité"],
+                ["VI", "intégrité"],
+                ["VA", "disponibilité"]
+            ];
 
-            let summary = parts.length ? parts.join(", ") + "." : "Les conditions d'exploitation sont décrites par les métriques sélectionnées.";
+            impactLabels.forEach(([metric, label]) => {
+                if (metrics[metric] === "H") impacts.push(`un impact élevé sur la ${label}`);
+                if (metrics[metric] === "L") impacts.push(`un impact faible sur la ${label}`);
+            });
+
+            let summary = parts.length
+                ? `La vulnérabilité est ${parts.join(", ")}.`
+                : "Les conditions d'exploitation sont décrites par les métriques sélectionnées.";
+
             if (impacts.length) {
                 summary += ` L'impact comprend ${this.joinFrench(impacts)}.`;
             }
+
+            if (this.nomenclature !== "CVSS-B") {
+                summary += ` L'évaluation utilise ${this.nomenclature}.`;
+            }
+
             return summary;
-        },
-
-        reportMetrics() {
-            if (!this.cvssConfigData) return [];
-            const result = [];
-            Object.values(this.cvssConfigData).forEach(typeData => {
-                Object.values(typeData.metric_groups || {}).forEach(groupData => {
-                    Object.entries(groupData).forEach(([name, metricData]) => {
-                        const selected = this.selectedOption(metricData);
-                        result.push({
-                            short: metricData.short,
-                            name,
-                            valueLabel: selected.label,
-                            value: selected.value,
-                            justification: this.justifications[metricData.short] || ""
-                        });
-                    });
-                });
-            });
-            return result;
-        },
-
-        markdownReport() {
-            const r = this.report;
-            const lines = [
-                `# ${r.title || "Vulnérabilité sans titre"}`,
-                "",
-                r.reference ? `**Référence :** ${r.reference}` : "",
-                r.target ? `**Cible :** ${r.target}` : "",
-                r.date ? `**Date :** ${this.formatDate(r.date)}` : "",
-                r.author ? `**Auteur :** ${r.author}` : "",
-                "",
-                "## Description",
-                "",
-                r.description || "_Non renseignée._",
-                "",
-                "## Évaluation CVSS v4.0",
-                "",
-                `**${this.scoreNomenclature} : ${this.score} — ${this.severityRating}**`,
-                "",
-                `\`${this.vector}\``,
-                "",
-                this.generatedSummary,
-                "",
-                "## Justification des métriques",
-                "",
-                ...this.reportMetrics.map(metric => `- **${metric.short} — ${metric.name} : ${metric.valueLabel}** — ${metric.justification || "Aucune justification renseignée."}`),
-                "",
-                "## Impact",
-                "",
-                `### Confidentialité\n${r.impactConfidentiality || "_Non renseigné._"}`,
-                "",
-                `### Intégrité\n${r.impactIntegrity || "_Non renseigné._"}`,
-                "",
-                `### Disponibilité\n${r.impactAvailability || "_Non renseigné._"}`,
-                "",
-                "## Preuve / PoC",
-                "",
-                r.evidence || "_Non renseignée._",
-                "",
-                "## Recommandation / remédiation",
-                "",
-                r.remediation || "_Non renseignée._",
-                "",
-                "## Références",
-                "",
-                r.references || "_Aucune._",
-                ""
-            ];
-            return lines.filter((line, index, array) => !(line === "" && array[index - 1] === "" )).join("\n");
         },
 
     },
 
     watch: {
-        report: {
+        justifications: {
             deep: true,
             handler() {
-                this.saveReport();
+                this.saveJustifications();
             }
         }
     },
@@ -389,7 +397,10 @@ const app = Vue.createApp({
 
     mounted() {
         window.addEventListener("hashchange", () => {
-            this.setButtonsToVector(window.location.hash.slice(1));
+            const hash = window.location.hash.slice(1);
+            if (hash && hash !== this.vector) {
+                this.setButtonsToVector(hash);
+            }
         });
     }
 });

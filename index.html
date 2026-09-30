@@ -1,120 +1,116 @@
-<!DOCTYPE html>
-<!--
-Copyright (c) 2023 FIRST.ORG, Inc., Red Hat, and contributors
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
--->
+<!doctype html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Calculateur CVSS 4.0 en français avec justification des métriques et rapport de vulnérabilité.">
-    <title>Calculateur CVSS 4.0 — Français</title>
-    <script src="https://unpkg.com/vue@3.2.45/dist/vue.global.prod.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/spectre.css@0.5.9/dist/spectre.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/spectre.css@0.5.9/dist/spectre-exp.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/spectre.css@0.5.9/dist/spectre-icons.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Calculateur CVSS 4.0 en français avec explications et justification des métriques.">
+    <title>Calculateur CVSS v4.0</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:,">
+    <script src="https://unpkg.com/vue@3.2.45/dist/vue.global.prod.js"></script>
+    <script src="cvss40.js"></script>
 </head>
 <body>
-<div id="app" class="app-shell">
-    <header class="app-header">
+<div id="app" v-cloak>
+    <header class="site-header">
         <div class="header-inner">
-            <div class="brand-block">
-                <div class="brand-mark" aria-hidden="true">CVSS</div>
-                <div>
-                    <h1>Calculateur CVSS 4.0</h1>
-                    <p>Calcul, justification et documentation de vulnérabilités</p>
-                </div>
+            <div>
+                <p class="eyebrow">Évaluation de vulnérabilité</p>
+                <h1>Calculateur CVSS <span>v4.0</span></h1>
             </div>
-
             <div class="header-actions">
-                <button class="btn" type="button" @click="resetAll">Réinitialiser</button>
-                <button class="btn btn-primary" type="button" @click="setView('report')">Mode rapport</button>
+                <button class="btn" type="button" @click="copyVector">Copier le vecteur</button>
+                <button class="btn btn-primary" type="button" @click="resetAll">Réinitialiser</button>
             </div>
         </div>
-
-        <nav class="view-tabs" aria-label="Mode de l'application">
-            <button :class="['view-tab', { active: currentView === 'calculator' }]" type="button" @click="setView('calculator')" :aria-current="currentView === 'calculator' ? 'page' : null">
-                Calculateur
-            </button>
-            <button :class="['view-tab', { active: currentView === 'report' }]" type="button" @click="setView('report')" :aria-current="currentView === 'report' ? 'page' : null">
-                Rapport de vulnérabilité
-            </button>
-        </nav>
     </header>
 
-    <main class="page-content">
+    <main class="container">
         <section class="score-panel" aria-labelledby="score-title">
             <div class="score-main">
-                <div class="score-label" id="score-title">{{ scoreNomenclature }}</div>
-                <div class="score-value" :class="getSeverityClass(severityRating)">{{ score }}</div>
-                <div class="severity-badge" :class="getSeverityClass(severityRating)">{{ severityRating }}</div>
-            </div>
-
-            <div class="score-details">
-                <div class="vector-label">Vecteur CVSS</div>
-                <code class="vector-value" :title="vector">{{ vector }}</code>
-                <div class="score-actions">
-                    <button class="btn btn-sm" type="button" @click="copyVector">Copier le vecteur</button>
-                    <button class="btn btn-sm" type="button" @click="setView('report')">Créer / modifier le rapport</button>
+                <div>
+                    <p class="eyebrow">{{ nomenclature }}</p>
+                    <h2 id="score-title">{{ score.toFixed(1) }}</h2>
+                    <span class="severity" :class="severityClass()">{{ severityRating }}</span>
                 </div>
-                <div class="macro-vector">Macro-vecteur : <code>{{ macroVector }}</code></div>
+                <div class="score-meta">
+                    <div>
+                        <span>Métriques définies</span>
+                        <strong>{{ definedMetricCount }} / 32</strong>
+                    </div>
+                    <div>
+                        <span>Type d’évaluation</span>
+                        <strong>{{ nomenclature }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="vector-bar">
+                <span>Vecteur</span>
+                <code>{{ vector }}</code>
             </div>
         </section>
 
         <div v-if="notice" class="notice" role="status" aria-live="polite">{{ notice }}</div>
 
-        <section v-if="currentView === 'calculator'" class="calculator-view">
-            <div class="intro-card">
-                <div>
-                    <h2>Évaluer la vulnérabilité</h2>
-                    <p>Sélectionnez directement les valeurs CVSS. Pour chaque choix, une explication est affichée et vous pouvez conserver votre justification technique.</p>
-                </div>
-                <div class="legend" aria-label="Légende des valeurs">
-                    <span class="legend-item"><span class="legend-dot high"></span> Élevé</span>
-                    <span class="legend-item"><span class="legend-dot low"></span> Bas</span>
-                    <span class="legend-item"><span class="legend-dot none"></span> Aucun</span>
-                </div>
-            </div>
+        <nav v-if="cvssConfigData" class="section-nav" aria-label="Sections CVSS">
+            <button type="button" @click="scrollToSection('base')">Base</button>
+            <button type="button" @click="scrollToSection('threat')">Menace</button>
+            <button type="button" @click="scrollToSection('environmental')">Environnemental</button>
+            <button type="button" @click="scrollToSection('supplemental')">Supplémentaires</button>
+        </nav>
 
-            <section v-for="(metricTypeData, metricType) in cvssConfigData" :key="metricType" class="metric-section">
+        <section class="intro-card">
+            <div>
+                <p class="eyebrow">Mode calcul</p>
+                <h2>Évaluez chaque métrique directement</h2>
+                <p>Les groupes sont séparés pour distinguer clairement les caractéristiques intrinsèques de la vulnérabilité, les informations de menace, le contexte environnemental et les informations supplémentaires.</p>
+            </div>
+            <div class="intro-note">
+                <strong>Important</strong>
+                <span>Les métriques Supplemental apportent du contexte mais ne modifient pas directement le score numérique.</span>
+            </div>
+        </section>
+
+        <template v-if="cvssConfigData">
+            <section
+                v-for="(metricTypeData, metricType) in cvssConfigData"
+                :key="metricType"
+                :id="metricType === 'Métriques de Base' ? 'base' : metricType === 'Métriques de menace' ? 'threat' : metricType === 'Environnemental (Contexte de l’environnement)' ? 'environmental' : 'supplemental'"
+                class="metric-section"
+                :class="sectionClass(metricType)"
+            >
                 <div class="section-heading">
                     <div>
-                        <p class="eyebrow">{{ metricTypeData.fill === 'consumer' ? 'Environnement' : 'CVSS' }}</p>
+                        <p class="section-index">{{ metricType === 'Métriques de Base' ? '01' : metricType === 'Métriques de menace' ? '02' : metricType === 'Environnemental (Contexte de l’environnement)' ? '03' : '04' }}</p>
                         <h2>{{ metricType }}</h2>
+                        <span class="section-count">{{ sectionMetricCount(metricTypeData) }} métrique{{ sectionMetricCount(metricTypeData) > 1 ? 's' : '' }}</span>
                     </div>
-                    <p class="section-help">{{ fillDescription(metricTypeData.fill) }}</p>
+                    <p class="section-help">{{ sectionDescription(metricType, metricTypeData.fill) }}</p>
                 </div>
 
-                <div v-for="(metricGroupData, metricGroup) in metricTypeData.metric_groups" :key="metricGroup" class="metric-group">
-                    <h3 v-if="metricGroup">{{ metricGroup }}</h3>
+                <div v-if="metricType === 'Environnemental (Contexte de l’environnement)'" class="environment-note">
+                    <strong>Contexte propre à l'environnement</strong>
+                    <p>Ces métriques servent à adapter l'évaluation à un déploiement précis : contrôles compensatoires, exigences de sécurité et caractéristiques de l'environnement. Elles sont facultatives et ne remplacent pas les métriques de Base.</p>
+                </div>
+
+                <div
+                    v-for="(metricGroupData, metricGroup) in metricTypeData.metric_groups"
+                    :key="metricGroup"
+                    class="metric-group"
+                    :class="groupClass(metricGroup)"
+                >
+                    <div class="group-heading" v-if="metricGroup">
+                        <div>
+                            <span class="group-marker"></span>
+                            <h3>{{ displayGroupName(metricGroup, metricType) }}</h3>
+                        </div>
+                        <p>{{ groupDescription(metricGroup, metricType) }}</p>
+                    </div>
+
                     <div class="metric-grid">
                         <article v-for="(metricData, metric) in metricGroupData" :key="metricData.short" class="metric-card">
                             <div class="metric-header">
                                 <div>
-                                    <div class="metric-code">{{ metricData.short }}</div>
+                                    <span class="metric-code">{{ metricData.short }}</span>
                                     <h4>{{ metric }}</h4>
                                 </div>
                                 <span class="metric-status" :class="selectedOption(metricData).value === 'X' ? 'undefined' : 'defined'">
@@ -138,194 +134,49 @@ POSSIBILITY OF SUCH DAMAGE.
                                 </button>
                             </div>
 
-                            <div class="selected-explanation" v-if="selectedOption(metricData)">
-                                <div class="explanation-label">Choix actuel</div>
+                            <div class="selected-explanation">
+                                <span class="explanation-label">Valeur sélectionnée</span>
                                 <strong>{{ selectedOption(metricData).label }}</strong>
                                 <p>{{ selectedOption(metricData).description }}</p>
                             </div>
 
-                            <label class="justification-label" :for="'justification-' + metricData.short">
-                                Justification de votre choix
-                                <span>Facultatif</span>
-                            </label>
-                            <textarea
-                                :id="'justification-' + metricData.short"
-                                class="justification-input"
-                                rows="2"
-                                :placeholder="'Pourquoi cette valeur est-elle adaptée à cette vulnérabilité ?'"
-                                v-model="justifications[metricData.short]"
-                                @input="saveJustifications"
-                            ></textarea>
+                            <div class="justification-block">
+                                <label class="justification-label" :for="'justification-' + metricData.short">
+                                    Justification
+                                    <span>Facultatif</span>
+                                </label>
+                                <textarea
+                                    :id="'justification-' + metricData.short"
+                                    class="justification-input"
+                                    rows="2"
+                                    :placeholder="'Pourquoi cette valeur est-elle adaptée à cette vulnérabilité ?'"
+                                    v-model="justifications[metricData.short]"
+                                    @input="saveJustifications"
+                                ></textarea>
+                            </div>
                         </article>
                     </div>
                 </div>
             </section>
+        </template>
 
-            <section class="summary-card">
-                <div class="section-heading compact">
-                    <div>
-                        <p class="eyebrow">Synthèse</p>
-                        <h2>Comprendre le score</h2>
-                    </div>
-                </div>
-                <p class="generated-summary">{{ generatedSummary }}</p>
-                <div class="summary-breakdown">
-                    <div v-for="(severity, description) in vectorInstance.severityBreakdown" :key="description">
-                        <span>{{ description }}</span>
-                        <strong>{{ severity }}</strong>
-                    </div>
-                </div>
-            </section>
-        </section>
-
-        <section v-else class="report-view">
-            <div class="report-editor no-print">
-                <div class="intro-card">
-                    <div>
-                        <p class="eyebrow">Documentation</p>
-                        <h2>Rapport de vulnérabilité</h2>
-                        <p>Décrivez la vulnérabilité et sa remédiation. Le score, le vecteur et les justifications CVSS sont repris automatiquement depuis le calculateur.</p>
-                    </div>
-                    <div class="report-actions">
-                        <button class="btn" type="button" @click="printReport">Imprimer / PDF</button>
-                        <button class="btn" type="button" @click="copyMarkdown">Copier le Markdown</button>
-                        <button class="btn btn-primary" type="button" @click="setView('calculator')">Retour au calcul</button>
-                    </div>
-                </div>
-
-                <div class="report-form-grid">
-                    <div class="form-field full">
-                        <label for="report-title">Titre de la vulnérabilité</label>
-                        <input id="report-title" type="text" v-model="report.title" placeholder="Ex. Contournement du contrôle d'accès">
-                    </div>
-                    <div class="form-field">
-                        <label for="report-reference">Référence</label>
-                        <input id="report-reference" type="text" v-model="report.reference" placeholder="Ex. WEB-001">
-                    </div>
-                    <div class="form-field">
-                        <label for="report-target">Cible / composant</label>
-                        <input id="report-target" type="text" v-model="report.target" placeholder="Ex. https://example.test/admin">
-                    </div>
-                    <div class="form-field">
-                        <label for="report-date">Date</label>
-                        <input id="report-date" type="date" v-model="report.date">
-                    </div>
-                    <div class="form-field">
-                        <label for="report-author">Auteur</label>
-                        <input id="report-author" type="text" v-model="report.author" placeholder="Nom / équipe">
-                    </div>
-                    <div class="form-field full">
-                        <label for="report-description">Description</label>
-                        <textarea id="report-description" rows="6" v-model="report.description" placeholder="Décrivez la vulnérabilité, son contexte et les conditions nécessaires à son exploitation."></textarea>
-                    </div>
-                    <div class="form-field">
-                        <label for="report-impact-confidentiality">Impact — confidentialité</label>
-                        <textarea id="report-impact-confidentiality" rows="4" v-model="report.impactConfidentiality" placeholder="Données ou informations accessibles..." ></textarea>
-                    </div>
-                    <div class="form-field">
-                        <label for="report-impact-integrity">Impact — intégrité</label>
-                        <textarea id="report-impact-integrity" rows="4" v-model="report.impactIntegrity" placeholder="Données ou actions pouvant être modifiées..." ></textarea>
-                    </div>
-                    <div class="form-field">
-                        <label for="report-impact-availability">Impact — disponibilité</label>
-                        <textarea id="report-impact-availability" rows="4" v-model="report.impactAvailability" placeholder="Effets sur la disponibilité..." ></textarea>
-                    </div>
-                    <div class="form-field">
-                        <label for="report-evidence">Preuve / PoC</label>
-                        <textarea id="report-evidence" rows="6" v-model="report.evidence" placeholder="Requête, réponse, étapes de reproduction ou extrait de preuve."></textarea>
-                    </div>
-                    <div class="form-field full">
-                        <label for="report-remediation">Recommandation / remédiation</label>
-                        <textarea id="report-remediation" rows="6" v-model="report.remediation" placeholder="Décrivez la correction recommandée et, si nécessaire, les mesures compensatoires."></textarea>
-                    </div>
-                    <div class="form-field full">
-                        <label for="report-references">Références</label>
-                        <textarea id="report-references" rows="3" v-model="report.references" placeholder="CVE, documentation, ticket, lien, référence interne... Une référence par ligne."></textarea>
-                    </div>
+        <section class="summary-card">
+            <div class="section-heading compact">
+                <div>
+                    <p class="section-index">Résumé</p>
+                    <h2>Comprendre le résultat</h2>
                 </div>
             </div>
-
-            <article class="report-preview" id="report-preview">
-                <div class="report-cover">
-                    <p class="eyebrow">Rapport de vulnérabilité</p>
-                    <h1>{{ report.title || 'Vulnérabilité sans titre' }}</h1>
-                    <div class="report-meta">
-                        <span v-if="report.reference"><strong>Référence :</strong> {{ report.reference }}</span>
-                        <span v-if="report.target"><strong>Cible :</strong> {{ report.target }}</span>
-                        <span v-if="report.date"><strong>Date :</strong> {{ formatDate(report.date) }}</span>
-                        <span v-if="report.author"><strong>Auteur :</strong> {{ report.author }}</span>
-                    </div>
-                </div>
-
-                <div class="report-section" v-if="report.description">
-                    <h2>Description</h2>
-                    <p class="preserve-lines">{{ report.description }}</p>
-                </div>
-
-                <div class="report-section">
-                    <h2>Évaluation CVSS v4.0</h2>
-                    <div class="report-score-grid">
-                        <div class="report-score-box">
-                            <span class="report-score-label">Score</span>
-                            <strong :class="getSeverityClass(severityRating)">{{ score }}</strong>
-                            <span>{{ severityRating }}</span>
-                        </div>
-                        <div class="report-vector-box">
-                            <span class="report-score-label">Vecteur</span>
-                            <code>{{ vector }}</code>
-                        </div>
-                    </div>
-                    <p class="generated-summary">{{ generatedSummary }}</p>
-                </div>
-
-                <div class="report-section">
-                    <h2>Justification des métriques</h2>
-                    <div class="report-metrics">
-                        <div v-for="metric in reportMetrics" :key="metric.short" class="report-metric-row">
-                            <div>
-                                <strong>{{ metric.short }}</strong>
-                                <span>{{ metric.name }}</span>
-                            </div>
-                            <div>
-                                <strong>{{ metric.valueLabel }}</strong>
-                                <p v-if="metric.justification">{{ metric.justification }}</p>
-                                <p v-else class="muted">Aucune justification renseignée.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="report-section report-impact" v-if="report.impactConfidentiality || report.impactIntegrity || report.impactAvailability">
-                    <h2>Impact</h2>
-                    <div v-if="report.impactConfidentiality"><h3>Confidentialité</h3><p class="preserve-lines">{{ report.impactConfidentiality }}</p></div>
-                    <div v-if="report.impactIntegrity"><h3>Intégrité</h3><p class="preserve-lines">{{ report.impactIntegrity }}</p></div>
-                    <div v-if="report.impactAvailability"><h3>Disponibilité</h3><p class="preserve-lines">{{ report.impactAvailability }}</p></div>
-                </div>
-
-                <div class="report-section" v-if="report.evidence">
-                    <h2>Preuve / PoC</h2>
-                    <pre class="evidence-block">{{ report.evidence }}</pre>
-                </div>
-
-                <div class="report-section" v-if="report.remediation">
-                    <h2>Recommandation / remédiation</h2>
-                    <p class="preserve-lines">{{ report.remediation }}</p>
-                </div>
-
-                <div class="report-section" v-if="report.references">
-                    <h2>Références</h2>
-                    <p class="preserve-lines">{{ report.references }}</p>
-                </div>
-
-                <footer class="report-footer">
-                    Généré avec le calculateur CVSS 4.0 — le score et le vecteur sont calculés par le moteur CVSS fourni avec l'application.
-                </footer>
-            </article>
+            <p class="generated-summary">{{ generatedSummary }}</p>
+            <div class="summary-details">
+                <div><span>Score</span><strong>{{ score.toFixed(1) }}</strong></div>
+                <div><span>Sévérité</span><strong>{{ severityRating }}</strong></div>
+                <div><span>Nomenclature</span><strong>{{ nomenclature }}</strong></div>
+            </div>
         </section>
     </main>
 </div>
 
-<script src="cvss40.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
