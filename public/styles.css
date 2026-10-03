@@ -258,7 +258,7 @@ h1 span { color: var(--accent); }
 .metric-status { padding: 4px 8px; border-radius: 7px; font-family: monospace; font-size: .78rem; font-weight: 800; }
 .metric-status.undefined { background: #eef1f3; color: #65717b; }
 .metric-status.defined { background: var(--accent-soft); color: var(--accent-dark); }
-.metric-description { min-height: 48px; margin: 12px 0; color: var(--muted); font-size: .9rem; }
+.metric-description { min-height: 48px; margin: 12px 0; color: var(--muted); font-size: .9rem; white-space: pre-line; }
 .option-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
 .metric-option {
     min-height: 54px;
@@ -292,7 +292,7 @@ h1 span { color: var(--accent); }
 }
 .explanation-label { display: block; margin-bottom: 2px; color: var(--muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
 .selected-explanation strong { font-size: .9rem; }
-.selected-explanation p { margin: 3px 0 0; color: var(--muted); font-size: .84rem; }
+.selected-explanation p { margin: 3px 0 0; color: var(--muted); font-size: .84rem; white-space: pre-line; }
 .justification-block { margin-top: 12px; }
 .justification-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: .82rem; font-weight: 800; }
 .justification-label span { color: var(--muted); font-weight: 500; }

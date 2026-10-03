@@ -3,6 +3,16 @@
 
 const JUSTIFICATIONS_STORAGE_KEY = "cvss-v4-justifications-french";
 
+// Le moteur cvss40.js reste identique à la version officielle (FIRST / Red Hat) :
+// il renvoie les sévérités en anglais, la traduction est faite ici, côté interface.
+const SEVERITY_LABELS_FR = {
+    None: "Aucun",
+    Low: "Bas",
+    Medium: "Moyen",
+    High: "Haut",
+    Critical: "Critique"
+};
+
 const app = Vue.createApp({
     data() {
         return {
@@ -23,13 +33,58 @@ const app = Vue.createApp({
                     throw new Error(`HTTP ${response.status}`);
                 }
 
-                this.cvssConfigData = await response.json();
+                const config = await response.json();
+                const issues = this.checkMetricsConsistency(config);
+                if (issues.length) {
+                    console.error("metrics.json n'est pas cohérent avec cvss40.js :", issues);
+                    this.showNotice("Configuration des métriques incohérente avec le moteur CVSS (voir la console).", 15000);
+                }
+
+                this.cvssConfigData = config;
                 this.loadJustifications();
                 this.updateCVSSInstance();
             } catch (error) {
                 console.error("Impossible de charger la configuration CVSS :", error);
-                this.showNotice("Impossible de charger la configuration CVSS.");
+                this.showNotice("Impossible de charger metrics.json. Servez le dossier public/ via un serveur local (ex. : python3 -m http.server) plutôt que par file://.", 20000);
             }
+        },
+
+        // Vérifie que metrics.json expose exactement les métriques et valeurs de Vector.METRICS.
+        // Retourne la liste des écarts (vide si tout est cohérent).
+        checkMetricsConsistency(config) {
+            const issues = [];
+            const declared = {};
+            Object.values(config).forEach(section => {
+                Object.values(section.metric_groups || {}).forEach(group => {
+                    Object.values(group).forEach(metric => {
+                        if (declared[metric.short]) {
+                            issues.push(`Métrique en double dans metrics.json : ${metric.short}`);
+                        }
+                        declared[metric.short] = Object.values(metric.options).map(option => option.value);
+                    });
+                });
+            });
+
+            Object.values(Vector.METRICS).forEach(category => {
+                Object.entries(category).forEach(([key, values]) => {
+                    if (!declared[key]) {
+                        issues.push(`Métrique absente de metrics.json : ${key}`);
+                        return;
+                    }
+                    const missing = values.filter(value => !declared[key].includes(value));
+                    const extra = declared[key].filter(value => !values.includes(value));
+                    if (missing.length) issues.push(`${key} : valeurs manquantes (${missing.join(", ")})`);
+                    if (extra.length) issues.push(`${key} : valeurs inconnues du moteur (${extra.join(", ")})`);
+                });
+            });
+
+            Object.keys(declared).forEach(key => {
+                if (!(key in Vector.ALL_METRICS)) {
+                    issues.push(`Métrique inconnue du moteur : ${key}`);
+                }
+            });
+
+            return issues;
         },
 
         groupDescription(groupName, sectionName) {
@@ -268,12 +323,12 @@ const app = Vue.createApp({
             }
         },
 
-        showNotice(message) {
+        showNotice(message, duration = 3000) {
             this.notice = message;
             clearTimeout(this.noticeTimer);
             this.noticeTimer = setTimeout(() => {
                 this.notice = "";
-            }, 3000);
+            }, duration);
         },
 
         scrollToSection(id) {
@@ -305,7 +360,8 @@ const app = Vue.createApp({
         },
 
         severityRating() {
-            return this.cvssInstance ? this.cvssInstance.severity : "Aucun";
+            if (!this.cvssInstance) return SEVERITY_LABELS_FR.None;
+            return SEVERITY_LABELS_FR[this.cvssInstance.severity] || this.cvssInstance.severity;
         },
 
         nomenclature() {
